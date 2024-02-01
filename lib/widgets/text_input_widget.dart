@@ -55,13 +55,6 @@ class TextInputWidget extends StatelessWidget {
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 11.5),
                 hintText: title,
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(
-                    color: DockColors.slate100,
-                    width: 1,
-                  ),
-                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: const BorderSide(
