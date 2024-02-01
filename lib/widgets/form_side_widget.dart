@@ -25,9 +25,18 @@ class FormSide extends StatelessWidget {
     return BlocBuilder<UserCubit, UserState>(
       builder: (context, state) {
         if (state is UserLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return Container(
+              width: MediaQuery.of(context).size.width - 300,
+              child: const Center(
+                child: CircularProgressIndicator(),
+              ));
         } else if (state is UserError) {
-          return const Center(child: CircularProgressIndicator());
+          return Container(
+            width: MediaQuery.of(context).size.width - 300,
+            child: const Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
         } else if (state is UserLoaded) {
           List<User> displayedUsers = state.users;
 
@@ -68,7 +77,7 @@ class FormSide extends StatelessWidget {
                             width: 200,
                             decoration: BoxDecoration(
                               color: DockColors.success120,
-                              borderRadius: BorderRadius.circular(2),
+                              borderRadius: BorderRadius.circular(4),
                               border: Border.all(
                                 color: DockColors.success120,
                                 width: 2,
