@@ -29,7 +29,7 @@ class Login extends StatelessWidget {
             } else if (state is LoginError) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Login Failed'),
+                  content: Text('Erro ao fazer login'),
                   backgroundColor: DockColors.danger100,
                   duration: Duration(seconds: 3),
                 ),
@@ -39,7 +39,7 @@ class Login extends StatelessWidget {
           child: Column(
             children: <Widget>[
               Expanded(
-                flex: 4,
+                flex: 3,
                 child: Container(
                   color: DockColors.iron100,
                   child: Center(
@@ -54,16 +54,20 @@ class Login extends StatelessWidget {
                 height: 60,
               ),
               Expanded(
-                flex: 6,
+                flex: 7,
                 child: SingleChildScrollView(
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(16.0),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Container(
-                          color: DockColors.background,
-                          width: 800,
+                          decoration: BoxDecoration(
+                            color: DockColors.white,
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          padding: const EdgeInsets.all(16.0),
+                          width: 700,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
@@ -81,35 +85,37 @@ class Login extends StatelessWidget {
                                     controller: _passwordController,
                                     isPassword: true,
                                   ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: InkWell(
+                                      onTap: () {
+                                        BlocProvider.of<LoginCubit>(context)
+                                            .logIn(
+                                          _usernameController.text,
+                                          _passwordController.text,
+                                        );
+                                      },
+                                      child: Container(
+                                        width: 784,
+                                        alignment: Alignment.center,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(8.0),
+                                          color: DockColors.iron100,
+                                        ),
+                                        padding: const EdgeInsets.all(16.0),
+                                        child: Text(
+                                          DockStrings.login,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: DockTheme.headLine.copyWith(
+                                              color: DockColors.white),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                 ],
                               ),
                             ],
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 100,
-                        ),
-                        InkWell(
-                          onTap: () {
-                            BlocProvider.of<LoginCubit>(context).logIn(
-                              _usernameController.text,
-                              _passwordController.text,
-                            );
-                          },
-                          child: Container(
-                            width: 784,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(16.0),
-                              color: DockColors.iron100,
-                            ),
-                            padding: const EdgeInsets.all(24.0),
-                            child: Text(
-                              DockStrings.login,
-                              overflow: TextOverflow.ellipsis,
-                              style: DockTheme.headLine
-                                  .copyWith(color: DockColors.white),
-                            ),
                           ),
                         ),
                       ],
