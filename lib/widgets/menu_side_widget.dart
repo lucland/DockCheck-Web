@@ -27,6 +27,9 @@ class MenuSide extends StatelessWidget {
                 SvgPicture.asset(
                   'assets/svg/logo_web.svg',
                 ),
+                const SizedBox(
+                  height: 16,
+                ),
                 InkWell(
                   onTap: () {},
                   child: Row(
@@ -37,13 +40,14 @@ class MenuSide extends StatelessWidget {
                         size: 20,
                       ),
                       const SizedBox(
-                        width: 8,
+                        width: 16,
                       ),
                       Text(
                         'Projetos',
                         overflow: TextOverflow.ellipsis,
                         style: DockTheme.h2.copyWith(
                             color: DockColors.background,
+                            fontSize: 20,
                             fontWeight: FontWeight.w400),
                       ),
                     ],
@@ -62,59 +66,91 @@ class MenuSide extends StatelessWidget {
                         size: 20,
                       ),
                       const SizedBox(
-                        width: 8,
+                        width: 16,
                       ),
                       Text(
                         'Funcionários',
                         overflow: TextOverflow.ellipsis,
                         style: DockTheme.h2.copyWith(
                             color: DockColors.background,
-                            fontWeight: FontWeight.w400),
+                            fontSize: 20,
+                            fontWeight: FontWeight.w100),
                       ),
                     ],
                   ),
                 ),
               ],
             ),
-            InkWell(
-              onTap: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => Login()),
-                );
-              },
-              child: Container(
-                height: 40,
-                decoration: BoxDecoration(
-                  color: DockColors.iron100,
-                  borderRadius: BorderRadius.circular(2),
-                  border: Border.all(
-                    color: DockColors.white,
-                    width: 2,
+            //text with version
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Divider(
+                  color: DockColors.white,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    'Versão 1.0.0',
+                    style: DockTheme.h2.copyWith(
+                      color: DockColors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
                 ),
-                child: Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.logout,
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8.0, 0.0, 8.9, 16.0),
+                  child: Text(
+                    '© 2024 DockCheck. Todos os direitos reservados.',
+                    style: DockTheme.h2.copyWith(
+                      color: DockColors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ),
+                InkWell(
+                  onTap: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => Login()),
+                    );
+                  },
+                  child: Container(
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: DockColors.iron100,
+                      borderRadius: BorderRadius.circular(4),
+                      border: Border.all(
                         color: DockColors.white,
-                        size: 16,
+                        width: 2,
                       ),
-                      const SizedBox(
-                        width: 10,
+                    ),
+                    child: Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.logout,
+                            color: DockColors.white,
+                            size: 16,
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          Text(
+                            'Sair',
+                            overflow: TextOverflow.ellipsis,
+                            style: DockTheme.h2.copyWith(
+                                color: DockColors.white, fontSize: 16),
+                          ),
+                        ],
                       ),
-                      Text(
-                        'Logout',
-                        overflow: TextOverflow.ellipsis,
-                        style: DockTheme.h2
-                            .copyWith(color: DockColors.white, fontSize: 16),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
-              ),
+              ],
             ),
           ],
         ),
