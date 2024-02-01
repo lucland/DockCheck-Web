@@ -1,9 +1,6 @@
-import 'package:dockcheck_web/utils/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../models/user.dart';
-import '../../utils/colors.dart';
 import '../../widgets/form_side_widget.dart';
 import '../../widgets/menu_side_widget.dart';
 import 'bloc/pesquisar_cubit.dart';
