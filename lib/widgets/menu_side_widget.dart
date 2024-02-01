@@ -1,3 +1,4 @@
+import 'package:dockcheck_web/features/login/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -76,7 +77,12 @@ class MenuSide extends StatelessWidget {
               ],
             ),
             InkWell(
-              onTap: () {},
+              onTap: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => Login()),
+                );
+              },
               child: Container(
                 height: 40,
                 decoration: BoxDecoration(
