@@ -51,7 +51,7 @@ class UserRepository {
     await apiService.delete('users/$id');
   }
 
-  Future<List<User>> getAllUsers({int limit = 99, int offset = 0}) async {
+  Future<List<User>> getAllUsers({int limit = 1000, int offset = 0}) async {
     final data = await apiService.get('users?limit=$limit&offset=$offset');
     print(data.toString());
     List<User> usuarios =
