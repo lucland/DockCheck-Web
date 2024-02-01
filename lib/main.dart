@@ -1,3 +1,4 @@
+import 'package:dockcheck_web/features/home/bloc/pesquisar_cubit.dart';
 import 'package:dockcheck_web/features/home/home.dart';
 import 'package:dockcheck_web/features/login/login.dart';
 import 'package:dockcheck_web/utils/theme.dart';
@@ -39,7 +40,9 @@ void main() {
   var beaconRepository = BeaconRepository(apiService, localStorageService);
   var receptorRepository = ReceptorRepository(apiService, localStorageService);
 
-  var loginCubit = LoginCubit(loginRepository, localStorageService);
+  var loginCubit =
+      LoginCubit(loginRepository, userRepository, localStorageService);
+  var userCUbit = UserCubit(userRepository);
 
   runApp(
     MultiBlocProvider(
@@ -59,6 +62,7 @@ void main() {
         BlocProvider<LoginCubit>(create: (_) => loginCubit),
         Provider<BeaconRepository>(create: (_) => beaconRepository),
         Provider<ReceptorRepository>(create: (_) => receptorRepository),
+        BlocProvider<UserCubit>(create: (_) => userCUbit),
       ],
       child: const MyApp(),
     ),
