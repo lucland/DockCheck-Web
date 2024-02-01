@@ -22,6 +22,7 @@ dependencies:
   logging: ^1.2.0
   clock: ^1.1.1
   hive: ^2.2.3
+  file_picker: ^6.1.1
 
 dev_dependencies:
   flutter_test:
