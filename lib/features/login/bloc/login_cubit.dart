@@ -39,6 +39,7 @@ class LoginCubit extends Cubit<LoginState> {
 
         await localStorageService.saveUser(user);
         SimpleLogger.info('User data saved successfully');
+        print('User data saved successfully');
 
         emit(LoginSuccess(
             userId: response['user_id'], token: response['token']));
