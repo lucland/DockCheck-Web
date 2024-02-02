@@ -16,21 +16,48 @@ class MenuSide extends StatelessWidget {
       width: 300,
       height: MediaQuery.of(context).size.height,
       color: DockColors.iron100,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SvgPicture.asset(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: SvgPicture.asset(
                   'assets/svg/logo_web.svg',
                 ),
-                const SizedBox(
-                  height: 16,
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: DockColors.iron30,
+                    borderRadius: BorderRadius.circular(0),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'DOF',
+                      style: DockTheme.h1.copyWith(
+                        color: DockColors.iron100,
+                        fontSize: 30,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
                 ),
-                InkWell(
+              ),
+              const SizedBox(
+                height: 24,
+              ),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+                child: InkWell(
                   onTap: () {},
                   child: Row(
                     children: [
@@ -53,10 +80,14 @@ class MenuSide extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(
-                  height: 16,
-                ),
-                InkWell(
+              ),
+              const SizedBox(
+                height: 16,
+              ),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+                child: InkWell(
                   onTap: () {},
                   child: Row(
                     children: [
@@ -79,10 +110,14 @@ class MenuSide extends StatelessWidget {
                     ],
                   ),
                 ),
-              ],
-            ),
-            //text with version
-            Column(
+              ),
+            ],
+          ),
+          //text with version
+          Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Divider(
@@ -152,8 +187,8 @@ class MenuSide extends StatelessWidget {
                 ),
               ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
