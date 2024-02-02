@@ -23,6 +23,8 @@ dependencies:
   clock: ^1.1.1
   hive: ^2.2.3
   file_picker: ^6.1.1
+  image_picker_for_web: ^3.0.2
+  cross_file: ^0.3.3+8
 
 dev_dependencies:
   flutter_test:
