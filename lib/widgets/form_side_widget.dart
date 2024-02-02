@@ -1,3 +1,4 @@
+import 'package:dockcheck_web/enums/nrs_enum.dart';
 import 'package:dockcheck_web/features/home/bloc/pesquisar_cubit.dart';
 import 'package:dockcheck_web/widgets/calendar_picker_widget.dart';
 import 'package:dockcheck_web/widgets/text_input_widget.dart';
@@ -25,13 +26,13 @@ class FormSide extends StatelessWidget {
     return BlocBuilder<UserCubit, UserState>(
       builder: (context, state) {
         if (state is UserLoading) {
-          return Container(
+          return SizedBox(
               width: MediaQuery.of(context).size.width - 300,
               child: const Center(
                 child: CircularProgressIndicator(),
               ));
         } else if (state is UserError) {
-          return Container(
+          return SizedBox(
             width: MediaQuery.of(context).size.width - 300,
             child: const Center(
               child: CircularProgressIndicator(),
@@ -296,48 +297,6 @@ class FormSide extends StatelessWidget {
   void openModal(BuildContext context, String s) {
     final nrTypeController = TextEditingController();
 
-    // Lista de NRs disponíveis.
-    final List<String> nrOptions = [
-      'NR-1 - DISPOSIÇÕES GERAIS E GERENCIAMENTO DE RISCOS OCUPACIONAIS',
-      'NR-2 - INSPEÇÃO PRÉVIA (REVOGADA)'
-          'NR-3 - EMBARGO OU INTERDIÇÃO',
-      'NR-4 - SERVIÇOS ESPECIALIZADOS EM ENGENHARIA DE SEGURANÇA E EM MEDICINA DO TRABALHO (SESMT)',
-      'NR-5 - COMISSÃO INTERNA DE PREVENÇÃO DE ACIDENTES (CIPA)',
-      'NR-6 - EQUIPAMENTO DE PROTEÇÃO INDIVIDUAL (EPI)',
-      'NR-7 - PROGRAMA DE CONTROLE MÉDICO DE SAÚDE OCUPACIONAL (PCMSO)',
-      'NR-8 - EDIFICAÇÕES',
-      'NR-9 - PROGRAMA DE PREVENÇÃO DE RISCOS AMBIENTAIS (PPRA)',
-      'NR-10 - SEGURANÇA EM INSTALAÇÕES E SERVIÇOS EM ELETRICIDADE',
-      'NR-11 - TRANSPORTE, MOVIMENTAÇÃO, ARMAZENAGEM E MANUSEIO DE MATERIAIS',
-      'NR-12 - SEGURANÇA NO TRABALHO EM MÁQUINAS E EQUIPAMENTOS',
-      'NR-13 - CALDEIRAS E VASOS DE PRESSÃO',
-      'NR-14 - FORNOS',
-      'NR-15 - ATIVIDADES E OPERAÇÕES INSALUBRES',
-      'NR-16 - ATIVIDADES E OPERAÇÕES PERIGOSAS',
-      'NR-17 - ERGONOMIA',
-      'NR-18 - CONDIÇÕES E MEIO AMBIENTE DE TRABALHO NA INDÚSTRIA DA CONSTRUÇÃO',
-      'NR-19 - EXPLOSIVOS',
-      'NR-20 - SEGURANÇA E SAÚDE NO TRABALHO COM INFLAMÁVEIS E COMBUSTÍVEIS',
-      'NR-21 - TRABALHOS A CÉU ABERTO',
-      'NR-22 - SEGURANÇA E SAÚDE OCUPACIONAL NA MINERAÇÃO',
-      'NR-23 - PROTEÇÃO CONTRA INCÊNDIOS',
-      'NR-24 - CONDIÇÕES SANITÁRIAS E DE CONFORTO NOS LOCAIS DE TRABALHO',
-      'NR-25 - RESÍDUOS INDUSTRIAIS',
-      'NR-26 - SINALIZAÇÃO DE SEGURANÇA',
-      'NR-27 - REGISTRO PROFISSIONAL DO TÉCNICO DE SEGURANÇA DO TRABALHO NO MINISTÉRIO DO TRABALHO',
-      'NR-28 - FISCALIZAÇÃO E PENALIDADES',
-      'NR-29 - NORMA REGULAMENTADORA DE SEGURANÇA E SAÚDE NO TRABALHO PORTUÁRIO',
-      'NR-30 - SEGURANÇA E SAÚDE NO TRABALHO AQUAVIÁRIO',
-      'NR-31 - SEGURANÇA E SAÚDE NO TRABALHO NA AGRICULTURA, PECUÁRIA SILVICULTURA, EXPLORAÇÃO FLORESTAL E AQUICULTURA',
-      'NR-32 - SEGURANÇA E SAÚDE NO TRABALHO EM SERVIÇOS DE SAÚDE',
-      'NR-33 - SEGURANÇA E SAÚDE NO TRABALHO EM ESPAÇOS CONFINADOS',
-      'NR-34 - CONDIÇÕES E MEIO AMBIENTE DE TRABALHO NA INDÚSTRIA DA CONSTRUÇÃO E REPARAÇÃO NAVAL',
-      'NR-35 - TRABALHO EM ALTURA',
-      'NR-36 - SEGURANÇA E SAÚDE NO TRABALHO EM EMPRESAS DE ABATE E PROCESSAMENTO DE CARNES E DERIVADOS',
-      'NR-37 - SEGURANÇA E SAÚDE EM PLATAFORMAS DE PETRÓLEO',
-      'NR-38 - SEGURANÇA E SAÚDE NO TRABALHO NAS ATIVIDADES DE LIMPEZA URBANA E MANEJO DE RESÍDUOS SÓLIDOS',
-    ];
-
     showDialog(
       context: context,
       builder: (context) {
@@ -350,165 +309,182 @@ class FormSide extends StatelessWidget {
           title: Text(s),
           content: SizedBox(
             width: 800,
-            child: Column(
-              children: [
-                TextInputWidget(
-                  title: DockStrings.nome,
-                  isRequired: true,
-                  controller: TextEditingController(
-                    text: '',
-                  ),
-                  onChanged: (text) {},
-                ),
-                Row(
-                  children: [
-                    Flexible(
-                      flex: 1,
-                      child: TextInputWidget(
-                        isRequired: true,
-                        title: DockStrings.email,
-                        controller: TextEditingController(
-                          text: '',
-                        ),
-                        onChanged: (text) {},
-                      ),
+            height: MediaQuery.of(context).size.height - 300,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  TextInputWidget(
+                    title: DockStrings.nome,
+                    isRequired: true,
+                    controller: TextEditingController(
+                      text: '',
                     ),
-                    Flexible(
-                      flex: 1,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Tipo sanguíneo', style: DockTheme.h2),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                top: 8, right: 16, bottom: 8),
-                            child: DropdownButtonFormField<String>(
-                              decoration: InputDecoration(
-                                contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 16, vertical: 11.5),
-                                hintText: 'Tipo Sanguíneo',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: const BorderSide(
-                                    color: DockColors.slate100,
-                                    width: 1,
+                    onChanged: (text) {},
+                  ),
+                  Row(
+                    children: [
+                      Flexible(
+                        flex: 1,
+                        child: TextInputWidget(
+                          isRequired: true,
+                          title: DockStrings.email,
+                          controller: TextEditingController(
+                            text: '',
+                          ),
+                          onChanged: (text) {},
+                        ),
+                      ),
+                      Flexible(
+                        flex: 1,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('Tipo sanguíneo', style: DockTheme.h2),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  top: 8, right: 16, bottom: 8),
+                              child: DropdownButtonFormField<String>(
+                                decoration: InputDecoration(
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 11.5),
+                                  hintText: 'Tipo Sanguíneo',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: const BorderSide(
+                                      color: DockColors.slate100,
+                                      width: 1,
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: const BorderSide(
+                                      color: DockColors.slate100,
+                                      width: 1,
+                                    ),
                                   ),
                                 ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: const BorderSide(
-                                    color: DockColors.slate100,
-                                    width: 1,
-                                  ),
-                                ),
+                                value: 'A+',
+                                onChanged: (String? newValue) {},
+                                items: [
+                                  '',
+                                  'A+',
+                                  'A-',
+                                  'B+',
+                                  'B-',
+                                  'AB+',
+                                  'AB-',
+                                  'O+',
+                                  'O-',
+                                ].map<DropdownMenuItem<String>>((String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(value),
+                                  );
+                                }).toList(),
                               ),
-                              value: 'A+',
-                              onChanged: (String? newValue) {},
-                              items: [
-                                '',
-                                'A+',
-                                'A-',
-                                'B+',
-                                'B-',
-                                'AB+',
-                                'AB-',
-                                'O+',
-                                'O-',
-                              ].map<DropdownMenuItem<String>>((String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(value),
-                                );
-                              }).toList(),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Flexible(
+                        flex: 1,
+                        child: TextInputWidget(
+                          title: DockStrings.funcao,
+                          controller: TextEditingController(
+                            text: '',
+                          ),
+                          onChanged: (text) {},
+                          isRequired: true,
+                        ),
+                      ),
+                      Flexible(
+                        flex: 1,
+                        child: TextInputWidget(
+                          title: DockStrings.empresa,
+                          keyboardType: TextInputType.text,
+                          controller: TextEditingController(
+                            text: '',
+                          ),
+                          onChanged: (text) {},
+                          isRequired: true,
+                        ),
+                      ),
+                    ],
+                  ),
+                  //divider
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 24, 0, 8),
+                        child: Text(
+                          'Documentos',
+                          overflow: TextOverflow.ellipsis,
+                          style: DockTheme.h1.copyWith(
+                              color: DockColors.iron80,
+                              fontWeight: FontWeight.w400),
+                        ),
+                      ),
+                      CalendarPickerWidget(
+                        showAttachmentIcon: true,
+                        title: DockStrings.aso,
+                        isRequired: true,
+                        controller: TextEditingController(),
+                        onChanged: (time) {},
+                      ),
+                      CalendarPickerWidget(
+                        showAttachmentIcon: true,
+                        title: DockStrings.nr34,
+                        isRequired: true,
+                        controller: TextEditingController(),
+                        onChanged: (time) {},
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: DropdownButtonFormField<String>(
+                          decoration: InputDecoration(
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 11.5),
+                            hintText: 'Adicionar NR',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(
+                                color: DockColors.slate100,
+                                width: 1,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(
+                                color: DockColors.slate100,
+                                width: 1,
+                              ),
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Flexible(
-                      flex: 1,
-                      child: TextInputWidget(
-                        title: DockStrings.funcao,
-                        controller: TextEditingController(
-                          text: '',
-                        ),
-                        onChanged: (text) {},
-                        isRequired: true,
-                      ),
-                    ),
-                    Flexible(
-                      flex: 1,
-                      child: TextInputWidget(
-                        title: DockStrings.empresa,
-                        keyboardType: TextInputType.text,
-                        controller: TextEditingController(
-                          text: '',
-                        ),
-                        onChanged: (text) {},
-                        isRequired: true,
-                      ),
-                    ),
-                  ],
-                ),
-                Column(children: [
-                  CalendarPickerWidget(
-                    showAttachmentIcon: false,
-                    title: DockStrings.aso,
-                    isRequired: false,
-                    controller: TextEditingController(),
-                    onChanged: (time) {},
-                  ),
-                  Row(
-                    children: [
-                      Flexible(
-                        flex: 1,
-                        child: CalendarPickerWidget(
-                          showAttachmentIcon: false,
-                          title: DockStrings.nr34,
-                          isRequired: false,
-                          controller: TextEditingController(),
-                          onChanged: (time) {},
-                        ),
-                      ),
-                      Flexible(
-                        flex: 1,
-                        child: CalendarPickerWidget(
-                          showAttachmentIcon: false,
-                          title: DockStrings.nr10,
-                          controller: TextEditingController(),
-                          onChanged: (time) {},
+                          value: NrsEnum.nrs[0],
+                          onChanged: (String? newValue) {
+                            //add a new calendar picker with selected NR and a remove button
+                          },
+                          items: NrsEnum.nrs
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: SizedBox(
+                                  width: 600,
+                                  child: Text(value,
+                                      overflow: TextOverflow.ellipsis)),
+                            );
+                          }).toList(),
                         ),
                       ),
                     ],
                   ),
-                  Row(
-                    children: [
-                      Flexible(
-                        flex: 1,
-                        child: CalendarPickerWidget(
-                          showAttachmentIcon: false,
-                          title: DockStrings.nr33,
-                          controller: TextEditingController(),
-                          onChanged: (time) {},
-                        ),
-                      ),
-                      Flexible(
-                        flex: 1,
-                        child: CalendarPickerWidget(
-                          showAttachmentIcon: false,
-                          title: DockStrings.nr35,
-                          controller: TextEditingController(),
-                          onChanged: (time) {},
-                        ),
-                      ),
-                    ],
-                  ),
-                ]),
-              ],
+                ],
+              ),
             ),
           ),
           actionsAlignment: MainAxisAlignment.spaceBetween,
