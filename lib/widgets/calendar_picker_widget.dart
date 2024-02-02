@@ -71,65 +71,74 @@ class CalendarPickerWidgetState extends State<CalendarPickerWidget> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                TextField(
-                  controller: widget.controller,
-                  decoration: InputDecoration(
-                    suffixIcon: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (widget.showAttachmentIcon)
-                          GestureDetector(
-                            onTap: () => _pickFile(),
-                            child: const Icon(
-                              Icons.attach_file,
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: widget.controller,
+                        decoration: InputDecoration(
+                          suffixIcon: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.calendar_today,
+                                color: DockColors.slate100,
+                              ),
+                              SizedBox(
+                                width: 20,
+                              ),
+                            ],
+                          ),
+                          hintText: widget.title,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                            borderSide: const BorderSide(
                               color: DockColors.slate100,
+                              width: 1.0,
                             ),
                           ),
-                        const Icon(
-                          Icons.calendar_today,
-                          color: DockColors.slate100,
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                            borderSide: const BorderSide(
+                              color: DockColors.slate100,
+                              width: 1.0,
+                            ),
+                          ),
                         ),
-                        const SizedBox(
-                          width: 20,
-                        ),
-                      ],
-                    ),
-                    hintText: widget.title,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: const BorderSide(
-                        color: DockColors.slate100,
-                        width: 1.0,
+                        readOnly: true,
+                        onTap: () async {
+                          DateTime? selectedDate = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime(2101),
+                          );
+                          if (selectedDate != null) {
+                            widget.controller.text =
+                                Formatter.formatDateTime(selectedDate);
+                            widget.onChanged(selectedDate);
+                          }
+                        },
                       ),
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: const BorderSide(
-                        color: DockColors.slate100,
-                        width: 1.0,
+                    if (widget.showAttachmentIcon)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: GestureDetector(
+                          onTap: () => _pickFile(),
+                          child: const Icon(
+                            Icons.attach_file,
+                            color: DockColors.slate100,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  readOnly: true,
-                  onTap: () async {
-                    DateTime? selectedDate = await showDatePicker(
-                      context: context,
-                      initialDate: DateTime.now(),
-                      firstDate: DateTime(2000),
-                      lastDate: DateTime(2101),
-                    );
-                    if (selectedDate != null) {
-                      widget.controller.text =
-                          Formatter.formatDateTime(selectedDate);
-                      widget.onChanged(selectedDate);
-                    }
-                  },
+                  ],
                 ),
                 if (attachedFileName != null)
                   Padding(
                     padding: const EdgeInsets.only(top: 8.0),
                     child: Text(
-                      'Arquivo anexado: $attachedFileName',
+                      '$attachedFileName',
                       style: DockTheme.h3.copyWith(
                         color: attachedFileName != null
                             ? DockColors.success100
