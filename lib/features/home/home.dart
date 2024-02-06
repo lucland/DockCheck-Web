@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../widgets/form_side_widget.dart';
+import '../../widgets/funcionarios_widget.dart';
 import '../../widgets/menu_side_widget.dart';
 import 'bloc/pesquisar_cubit.dart';
 
@@ -26,12 +26,12 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    context.read<UserCubit>().fetchUsers();
+    context.read<PesquisarCubit>().fetchUsers();
     return Scaffold(
       body: Row(
         children: [
           const MenuSide(),
-          FormSide(listWidget: listWidget),
+          FuncionariosWidget(listWidget: listWidget),
         ],
       ),
     );
