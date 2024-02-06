@@ -5,7 +5,7 @@ import '../../../repositories/user_repository.dart';
 import '../../../utils/simple_logger.dart';
 import 'pesquisar_state.dart';
 
-class UserCubit extends Cubit<UserState> {
+class PesquisarCubit extends Cubit<PesquisarState> {
   final UserRepository userRepository;
   List<User> allUsers = [];
   List<User> filteredUsers = [];
@@ -15,12 +15,12 @@ class UserCubit extends Cubit<UserState> {
   @override
   bool isClosed = false;
 
-  UserCubit(this.userRepository) : super(UserInitial());
+  PesquisarCubit(this.userRepository) : super(PesquisarInitial());
 
   Future<void> fetchUsers() async {
     try {
       if (!isClosed) {
-        emit(UserLoading());
+        emit(PesquisarLoading());
       }
 
       allUsers = await userRepository.getAllUsers();
@@ -34,13 +34,13 @@ class UserCubit extends Cubit<UserState> {
         if (isSearching) {
           _applySearchFilter();
         } else {
-          emit(UserLoaded(allUsers));
+          emit(PesquisarLoaded(allUsers));
         }
       }
     } catch (e) {
       SimpleLogger.warning('Error during data synchronization: $e');
       if (!isClosed) {
-        emit(UserError("Failed to fetch users1. $e"));
+        emit(PesquisarError("Failed to fetch users1. $e"));
       }
     }
   }
@@ -48,7 +48,7 @@ class UserCubit extends Cubit<UserState> {
   Future<void> searchUsers(String query) async {
     try {
       if (!isClosed) {
-        emit(UserLoading());
+        emit(PesquisarLoading());
       }
 
       searchQuery = query;
@@ -65,12 +65,12 @@ class UserCubit extends Cubit<UserState> {
           .toList();
 
       if (!isClosed) {
-        emit(UserLoaded(filteredUsers));
+        emit(PesquisarLoaded(filteredUsers));
       }
     } catch (e) {
       SimpleLogger.warning('Error during data synchronization: $e');
       if (!isClosed) {
-        emit(UserError("Failed to fetch users2. $e"));
+        emit(PesquisarError("Failed to fetch users2. $e"));
       }
     }
   }
@@ -81,7 +81,7 @@ class UserCubit extends Cubit<UserState> {
             user.name.toLowerCase().contains(searchQuery.toLowerCase()))
         .toList();
 
-    emit(UserLoaded(filteredUsers));
+    emit(PesquisarLoaded(filteredUsers));
   }
 
   @override
