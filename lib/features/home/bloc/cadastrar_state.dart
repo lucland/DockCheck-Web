@@ -9,6 +9,8 @@ class CadastrarState {
   final Event evento;
   final bool userCreated;
   final bool cadastroHabilitado;
+  final List<String> nrTypes;
+  final String selectedNr;
 
   CadastrarState({
     this.numero = 0,
@@ -18,6 +20,8 @@ class CadastrarState {
     required this.evento,
     this.userCreated = false,
     this.cadastroHabilitado = false,
+    this.nrTypes = const [],
+    this.selectedNr = '',
   });
 
   CadastrarState copyWith({
@@ -28,6 +32,8 @@ class CadastrarState {
     Event? evento,
     bool? userCreated,
     bool? cadastroHabilitado,
+    List<String>? nrTypes,
+    String? selectedNr,
   }) {
     return CadastrarState(
       numero: numero ?? this.numero,
@@ -37,6 +43,8 @@ class CadastrarState {
       evento: evento ?? this.evento,
       userCreated: userCreated ?? this.userCreated,
       cadastroHabilitado: cadastroHabilitado ?? this.cadastroHabilitado,
+      nrTypes: nrTypes ?? this.nrTypes,
+      selectedNr: selectedNr ?? this.selectedNr,
     );
   }
 }
