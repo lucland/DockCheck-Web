@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
+import 'features/details/bloc/details_cubit.dart';
+import 'features/home/bloc/cadastrar_cubit.dart';
 import 'features/login/bloc/login_cubit.dart';
 import 'repositories/authorization_repository.dart';
 import 'repositories/beacon_repository.dart';
@@ -42,7 +44,9 @@ void main() {
 
   var loginCubit =
       LoginCubit(loginRepository, userRepository, localStorageService);
-  var userCUbit = UserCubit(userRepository);
+  var pesquisarCUbit = PesquisarCubit(userRepository);
+  var cadastrarCubit = CadastrarCubit(userRepository, localStorageService);
+  var detailsCubit = DetailsCubit(userRepository, localStorageService);
 
   runApp(
     MultiBlocProvider(
@@ -62,7 +66,9 @@ void main() {
         BlocProvider<LoginCubit>(create: (_) => loginCubit),
         Provider<BeaconRepository>(create: (_) => beaconRepository),
         Provider<ReceptorRepository>(create: (_) => receptorRepository),
-        BlocProvider<UserCubit>(create: (_) => userCUbit),
+        BlocProvider<PesquisarCubit>(create: (_) => pesquisarCUbit),
+        BlocProvider<CadastrarCubit>(create: (_) => cadastrarCubit),
+        BlocProvider<DetailsCubit>(create: (_) => detailsCubit),
       ],
       child: const MyApp(),
     ),
@@ -78,6 +84,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: DockTheme.theme,
       home: Login(),
+      //home: const Home(),
     );
   }
 }
