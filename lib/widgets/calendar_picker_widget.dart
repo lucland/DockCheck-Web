@@ -11,15 +11,19 @@ class CalendarPickerWidget extends StatefulWidget {
   final TextEditingController controller;
   final void Function(DateTime) onChanged;
   final bool showAttachmentIcon;
+  final bool showRemoveButton;
+  final void Function()? onRemove;
 
-  const CalendarPickerWidget({
-    Key? key,
-    required this.title,
-    this.isRequired = false,
-    required this.controller,
-    required this.onChanged,
-    this.showAttachmentIcon = true,
-  }) : super(key: key);
+  const CalendarPickerWidget(
+      {Key? key,
+      required this.title,
+      this.isRequired = false,
+      required this.controller,
+      required this.onChanged,
+      this.showAttachmentIcon = true,
+      this.showRemoveButton = false,
+      this.onRemove})
+      : super(key: key);
 
   @override
   CalendarPickerWidgetState createState() => CalendarPickerWidgetState();
@@ -123,12 +127,41 @@ class CalendarPickerWidgetState extends State<CalendarPickerWidget> {
                     ),
                     if (widget.showAttachmentIcon)
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: GestureDetector(
+                        padding: const EdgeInsets.only(left: 8.0),
+                        child: InkWell(
                           onTap: () => _pickFile(),
-                          child: const Icon(
-                            Icons.attach_file,
-                            color: DockColors.slate100,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: DockColors.slate100,
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            child: const Padding(
+                              padding: EdgeInsets.all(12.0),
+                              child: Icon(
+                                Icons.attach_file,
+                                color: DockColors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    if (widget.showRemoveButton)
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8.0),
+                        child: InkWell(
+                          onTap: widget.onRemove,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: DockColors.danger100,
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            child: const Padding(
+                              padding: EdgeInsets.all(12.0),
+                              child: Icon(
+                                Icons.close,
+                                color: DockColors.white,
+                              ),
+                            ),
                           ),
                         ),
                       ),
