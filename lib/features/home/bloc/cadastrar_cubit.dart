@@ -2,11 +2,10 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker_for_web/image_picker_for_web.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../models/event.dart';
@@ -84,6 +83,11 @@ class CadastrarCubit extends Cubit<CadastrarState> {
               justification: '-',
               status: '-',
             ),
+            isLoading: true,
+            userCreated: false,
+            cadastroHabilitado: false,
+            nrTypes: [],
+            selectedNr: '',
           ),
         );
 
@@ -107,13 +111,38 @@ class CadastrarCubit extends Cubit<CadastrarState> {
     }
   }
 
+  void addNrType(String nrType) {
+    //if nrtype is not in the list, add it
+    if (state.nrTypes.contains(nrType)) {
+      return;
+    }
+    final updatedNrTypes = List<String>.from(state.nrTypes)..add(nrType);
+    emit(state.copyWith(nrTypes: updatedNrTypes));
+  }
+
+  void removeNrType(String nrType) {
+    final updatedNrTypes = List<String>.from(state.nrTypes)..remove(nrType);
+    emit(state.copyWith(nrTypes: updatedNrTypes));
+  }
+
+  void updateSelectedNr(String nrType) {
+    emit(state.copyWith(selectedNr: nrType));
+  }
+
   Future<void> pickImage() async {
-    /* final image = await ImagePickerPlugin().getImageFromSource(source: XFile source);
-    if (image != null) {
-      final imagePath = image.path;
-      updatePicture(imagePath,
-          quality: 40); // Defina a qualidade desejada (entre 0 e 100)
-    }*/
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.image,
+    );
+
+    //receive the bytes of the image, convert it to base64 and update the state
+    if (result != null) {
+      Uint8List bytes = result.files.first.bytes!;
+      String base64Image = base64Encode(bytes);
+      final user = state.user.copyWith(picture: base64Image);
+      if (!isClosed) {
+        emit(state.copyWith(user: user));
+      }
+    }
   }
 
   void removeImage() {
@@ -286,6 +315,73 @@ class CadastrarCubit extends Cubit<CadastrarState> {
       if (!isClosed) {}
       emit(state.copyWith(user: user));
       checkCadastroHabilitado();
+    }
+  }
+
+  void resetState() {
+    if (!isClosed) {
+      emit(state.copyWith(
+        user: User(
+          id: '',
+          authorizationsId: [""],
+          name: '',
+          company: '',
+          role: '',
+          project: '-',
+          number: 0,
+          bloodType: '-',
+          cpf: '-',
+          aso: DateTime.now(),
+          asoDocument: '-',
+          hasAso: false,
+          nr34: DateTime.now(),
+          nr34Document: '-',
+          hasNr34: false,
+          nr35: DateTime.now(),
+          nr35Document: '-',
+          hasNr35: false,
+          nr33: DateTime.now(),
+          nr33Document: '-',
+          hasNr33: false,
+          nr10: DateTime.now(),
+          nr10Document: '-',
+          hasNr10: false,
+          email: '-',
+          area: 'Praça de Máquinas',
+          isAdmin: false,
+          isVisitor: false,
+          isPortalo: false,
+          isCrew: false,
+          isOnboarded: false,
+          isBlocked: false,
+          blockReason: '-',
+          iTag: '',
+          picture: '',
+          typeJob: '-',
+          startJob: DateTime.now(),
+          endJob: DateTime.now(),
+          username: "",
+          salt: '',
+          hash: '',
+          status: '-',
+        ),
+        evento: Event(
+          id: Uuid().v4(),
+          portalId: '-',
+          userId: '-',
+          timestamp: DateTime.now(),
+          beaconId: '-',
+          vesselId: '-',
+          action: 0,
+          justification: '-',
+          status: '-',
+        ),
+        isLoading: true,
+        userCreated: false,
+        cadastroHabilitado: false,
+        nrTypes: [],
+        selectedNr: '',
+      ));
     }
   }
 
