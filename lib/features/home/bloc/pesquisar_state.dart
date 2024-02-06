@@ -1,17 +1,17 @@
 import '../../../models/user.dart';
 
-abstract class UserState {}
+abstract class PesquisarState {}
 
-class UserInitial extends UserState {}
+class PesquisarInitial extends PesquisarState {}
 
-class UserLoading extends UserState {}
+class PesquisarLoading extends PesquisarState {}
 
-class UserLoaded extends UserState {
+class PesquisarLoaded extends PesquisarState {
   final List<User> users;
-  UserLoaded(this.users);
+  PesquisarLoaded(this.users);
 }
 
-class UserError extends UserState {
+class PesquisarError extends PesquisarState {
   final String message;
-  UserError(this.message);
+  PesquisarError(this.message);
 }
