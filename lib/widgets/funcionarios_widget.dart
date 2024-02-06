@@ -1,18 +1,17 @@
-import 'package:dockcheck_web/enums/nrs_enum.dart';
 import 'package:dockcheck_web/features/home/bloc/pesquisar_cubit.dart';
-import 'package:dockcheck_web/widgets/calendar_picker_widget.dart';
-import 'package:dockcheck_web/widgets/text_input_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../features/details/details.dart';
 import '../features/home/bloc/pesquisar_state.dart';
 import '../models/user.dart';
 import '../utils/colors.dart';
 import '../utils/strings.dart';
 import '../utils/theme.dart';
+import 'cadastrar_modal_widget.dart';
 
-class FormSide extends StatelessWidget {
-  const FormSide({
+class FuncionariosWidget extends StatelessWidget {
+  const FuncionariosWidget({
     super.key,
     required this.listWidget,
   });
@@ -21,30 +20,30 @@ class FormSide extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.read<UserCubit>().fetchUsers();
+    context.read<PesquisarCubit>().fetchUsers();
 
-    return BlocBuilder<UserCubit, UserState>(
+    return BlocBuilder<PesquisarCubit, PesquisarState>(
       builder: (context, state) {
-        if (state is UserLoading) {
+        if (state is PesquisarLoading) {
           return SizedBox(
               width: MediaQuery.of(context).size.width - 300,
               child: const Center(
                 child: CircularProgressIndicator(),
               ));
-        } else if (state is UserError) {
+        } else if (state is PesquisarError) {
           return SizedBox(
             width: MediaQuery.of(context).size.width - 300,
             child: const Center(
               child: CircularProgressIndicator(),
             ),
           );
-        } else if (state is UserLoaded) {
+        } else if (state is PesquisarLoaded) {
           List<User> displayedUsers = state.users;
 
-          if (context.read<UserCubit>().isSearching) {
+          if (context.read<PesquisarCubit>().isSearching) {
             displayedUsers = displayedUsers
                 .where((user) => user.name.toLowerCase().contains(
-                    context.read<UserCubit>().searchQuery.toLowerCase()))
+                    context.read<PesquisarCubit>().searchQuery.toLowerCase()))
                 .toList();
           }
 
@@ -197,15 +196,9 @@ class FormSide extends StatelessWidget {
                             width: 1,
                           ),
                         ),
-                        suffixIcon: GestureDetector(
-                          onTap: () {
-                            //context.read<UserCubit>().fetchUsers()
-                          },
-                          child: const Icon(Icons.search_rounded),
-                        ),
                       ),
                       onSubmitted: (value) {
-                        // context.read<UserCubit>().searchUsers(value);
+                        context.read<PesquisarCubit>().searchUsers(value);
                       },
                     ),
                     Padding(
@@ -262,13 +255,29 @@ class FormSide extends StatelessWidget {
         leading: _buildLeadingIcon(user),
         subtitle: Text(user.cpf.toString()),
         onTap: () {
-          /* Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => Details(user: user),
-            ),
-          );*/
+          _openRightSideModal(context, user);
         },
       ),
+    );
+  }
+
+  void _openRightSideModal(BuildContext context, User user) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return FractionallySizedBox(
+          heightFactor: 1,
+          child: Container(
+            width: MediaQuery.of(context).size.width *
+                0.5, // 50% width of the screen
+            child: Details(
+                user:
+                    user), // Assuming Details widget takes a user as a parameter
+          ),
+        );
+      },
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent, // Makes background transparent
     );
   }
 
@@ -295,214 +304,12 @@ class FormSide extends StatelessWidget {
   }
 
   void openModal(BuildContext context, String s) {
-    final nrTypeController = TextEditingController();
-
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          backgroundColor: DockColors.white,
-          surfaceTintColor: DockColors.white,
-          title: Text(s),
-          content: SizedBox(
-            width: 800,
-            height: MediaQuery.of(context).size.height - 300,
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  TextInputWidget(
-                    title: DockStrings.nome,
-                    isRequired: true,
-                    controller: TextEditingController(
-                      text: '',
-                    ),
-                    onChanged: (text) {},
-                  ),
-                  Row(
-                    children: [
-                      Flexible(
-                        flex: 1,
-                        child: TextInputWidget(
-                          isRequired: true,
-                          title: DockStrings.email,
-                          controller: TextEditingController(
-                            text: '',
-                          ),
-                          onChanged: (text) {},
-                        ),
-                      ),
-                      Flexible(
-                        flex: 1,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text('Tipo sanguíneo', style: DockTheme.h2),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                  top: 8, right: 16, bottom: 8),
-                              child: DropdownButtonFormField<String>(
-                                decoration: InputDecoration(
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 16, vertical: 11.5),
-                                  hintText: 'Tipo Sanguíneo',
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: const BorderSide(
-                                      color: DockColors.slate100,
-                                      width: 1,
-                                    ),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: const BorderSide(
-                                      color: DockColors.slate100,
-                                      width: 1,
-                                    ),
-                                  ),
-                                ),
-                                value: 'A+',
-                                onChanged: (String? newValue) {},
-                                items: [
-                                  '',
-                                  'A+',
-                                  'A-',
-                                  'B+',
-                                  'B-',
-                                  'AB+',
-                                  'AB-',
-                                  'O+',
-                                  'O-',
-                                ].map<DropdownMenuItem<String>>((String value) {
-                                  return DropdownMenuItem<String>(
-                                    value: value,
-                                    child: Text(value),
-                                  );
-                                }).toList(),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Flexible(
-                        flex: 1,
-                        child: TextInputWidget(
-                          title: DockStrings.funcao,
-                          controller: TextEditingController(
-                            text: '',
-                          ),
-                          onChanged: (text) {},
-                          isRequired: true,
-                        ),
-                      ),
-                      Flexible(
-                        flex: 1,
-                        child: TextInputWidget(
-                          title: DockStrings.empresa,
-                          keyboardType: TextInputType.text,
-                          controller: TextEditingController(
-                            text: '',
-                          ),
-                          onChanged: (text) {},
-                          isRequired: true,
-                        ),
-                      ),
-                    ],
-                  ),
-                  //divider
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 24, 0, 8),
-                        child: Text(
-                          'Documentos',
-                          overflow: TextOverflow.ellipsis,
-                          style: DockTheme.h1.copyWith(
-                              color: DockColors.iron80,
-                              fontWeight: FontWeight.w400),
-                        ),
-                      ),
-                      CalendarPickerWidget(
-                        showAttachmentIcon: true,
-                        title: DockStrings.aso,
-                        isRequired: true,
-                        controller: TextEditingController(),
-                        onChanged: (time) {},
-                      ),
-                      CalendarPickerWidget(
-                        showAttachmentIcon: true,
-                        title: DockStrings.nr34,
-                        isRequired: true,
-                        controller: TextEditingController(),
-                        onChanged: (time) {},
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: DropdownButtonFormField<String>(
-                          decoration: InputDecoration(
-                            contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 11.5),
-                            hintText: 'Adicionar NR',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: const BorderSide(
-                                color: DockColors.slate100,
-                                width: 1,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: const BorderSide(
-                                color: DockColors.slate100,
-                                width: 1,
-                              ),
-                            ),
-                          ),
-                          value: NrsEnum.nrs[0],
-                          onChanged: (String? newValue) {
-                            //add a new calendar picker with selected NR and a remove button
-                          },
-                          items: NrsEnum.nrs
-                              .map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: SizedBox(
-                                  width: 600,
-                                  child: Text(value,
-                                      overflow: TextOverflow.ellipsis)),
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-          actionsAlignment: MainAxisAlignment.spaceBetween,
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Fechar',
-                  style: TextStyle(color: DockColors.danger100)),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Adicionar'),
-            ),
-          ],
+        return CadastrarModal(
+          s: s,
         );
       },
     );
