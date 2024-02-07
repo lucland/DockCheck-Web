@@ -66,6 +66,15 @@ class CadastrarModal extends StatelessWidget {
                               onChanged: (text) {},
                               isRequired: true,
                             ),
+                            TextInputWidget(
+                              title: DockStrings.cpf,
+                              controller: TextEditingController(
+                                text: '',
+                              ),
+                              onChanged: (text) {},
+                              keyboardType: TextInputType.number,
+                              isRequired: true,
+                            ),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
