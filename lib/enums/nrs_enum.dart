@@ -1,5 +1,4 @@
 class NrsEnum {
-  static const String aso = 'ASO - ATESTADO DE SAÚDE OCUPACIONAL';
   static const String nr1 =
       'NR-1 - DISPOSIÇÕES GERAIS E GERENCIAMENTO DE RISCOS OCUPACIONAIS';
   static const String nr2 = 'NR-2 - INSPEÇÃO PRÉVIA (REVOGADA)';
@@ -50,8 +49,6 @@ class NrsEnum {
       'NR-32 - SEGURANÇA E SAÚDE NO TRABALHO EM SERVIÇOS DE SAÚDE';
   static const String nr33 =
       'NR-33 - SEGURANÇA E SAÚDE NO TRABALHO EM ESPAÇOS CONFINADOS';
-  static const String nr34 =
-      'NR-34 - CONDIÇÕES E MEIO AMBIENTE DE TRABALHO NA INDÚSTRIA DA CONSTRUÇÃO E REPARAÇÃO NAVAL';
   static const String nr35 = 'NR-35 - TRABALHO EM ALTURA';
   static const String nr36 =
       'NR-36 - SEGURANÇA E SAÚDE NO TRABALHO EM EMPRESAS DE ABATE E PROCESSAMENTO DE CARNES E DERIVADOS';
@@ -61,7 +58,6 @@ class NrsEnum {
       'NR-38 - SEGURANÇA E SAÚDE NO TRABALHO NAS ATIVIDADES DE LIMPEZA URBANA E MANEJO DE RESÍDUOS SÓLIDOS';
 
   static const List<String> nrs = [
-    aso,
     nr1,
     nr2,
     nr3,
@@ -95,7 +91,6 @@ class NrsEnum {
     nr31,
     nr32,
     nr33,
-    nr34,
     nr35,
     nr36,
     nr37,
