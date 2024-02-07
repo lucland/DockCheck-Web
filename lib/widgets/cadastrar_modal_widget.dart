@@ -45,10 +45,12 @@ class CadastrarModal extends StatelessWidget {
                     onChanged: (text) {},
                   ),
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Flexible(
                         flex: 6,
                         child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             TextInputWidget(
                               isRequired: true,
@@ -131,8 +133,32 @@ class CadastrarModal extends StatelessWidget {
                       ),
                       Flexible(
                           flex: 4,
-                          child: ImagePickerWidget(
-                              cubit: context.read<CadastrarCubit>())),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Padding(
+                                    padding: EdgeInsets.only(bottom: 8.0),
+                                    child: Text('Foto',
+                                        style: DockTheme.h2,
+                                        overflow: TextOverflow.ellipsis),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 2.0),
+                                    child: Text(
+                                      '*',
+                                      style: DockTheme.h2.copyWith(
+                                          color: DockColors.danger100),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              ImagePickerWidget(
+                                  cubit: context.read<CadastrarCubit>()),
+                            ],
+                          )),
                     ],
                   ),
 
@@ -155,6 +181,7 @@ class CadastrarModal extends StatelessWidget {
                         title: DockStrings.aso,
                         isRequired: true,
                         controller: TextEditingController(),
+                        cubit: context.read<CadastrarCubit>(),
                         onChanged: (time) {},
                       ),
                       CalendarPickerWidget(
@@ -162,6 +189,7 @@ class CadastrarModal extends StatelessWidget {
                         title: DockStrings.nr34,
                         isRequired: true,
                         controller: TextEditingController(),
+                        cubit: context.read<CadastrarCubit>(),
                         onChanged: (time) {},
                       ),
                       ...state.nrTypes.map(
@@ -172,6 +200,7 @@ class CadastrarModal extends StatelessWidget {
                           controller: TextEditingController(),
                           onChanged: (time) {},
                           showRemoveButton: true,
+                          cubit: context.read<CadastrarCubit>(),
                           onRemove: () => context
                               .read<CadastrarCubit>()
                               .removeNrType(nrType),
