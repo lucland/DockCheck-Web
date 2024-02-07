@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:dockcheck_web/features/home/bloc/cadastrar_cubit.dart';
 import 'package:dockcheck_web/utils/colors.dart';
 import 'package:dockcheck_web/utils/theme.dart';
 import 'package:file_picker/file_picker.dart';
@@ -13,6 +16,7 @@ class CalendarPickerWidget extends StatefulWidget {
   final bool showAttachmentIcon;
   final bool showRemoveButton;
   final void Function()? onRemove;
+  final CadastrarCubit cubit;
 
   const CalendarPickerWidget(
       {Key? key,
@@ -22,6 +26,7 @@ class CalendarPickerWidget extends StatefulWidget {
       required this.onChanged,
       this.showAttachmentIcon = true,
       this.showRemoveButton = false,
+      required this.cubit,
       this.onRemove})
       : super(key: key);
 
@@ -37,6 +42,11 @@ class CalendarPickerWidgetState extends State<CalendarPickerWidget> {
       type: FileType.custom,
       allowedExtensions: ['pdf'],
     );
+
+    //turn the result.files.first into a base64 string
+    if (result != null) {
+      final String base64String = base64Encode(result.files.first.bytes!);
+    }
 
     if (result != null) {
       final String fileName = result.files.first.name;
