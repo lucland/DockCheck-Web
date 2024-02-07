@@ -26,65 +26,62 @@ class TextInputWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (title != '')
-            Row(
-              children: [
-                Flexible(
-                  child: Text(
-                    title,
-                    style: DockTheme.h2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                if (isRequired)
-                  Text(
-                    '*',
-                    style: DockTheme.h2.copyWith(color: DockColors.danger100),
-                  ),
-              ],
-            ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              decoration: InputDecoration(
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 11.5),
-                hintText: title,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(
-                    color: DockColors.iron100,
-                    width: 1,
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(
-                    color: DockColors.iron100,
-                    width: 1,
-                  ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (title != '')
+          Row(
+            children: [
+              Flexible(
+                child: Text(
+                  title,
+                  style: DockTheme.h2,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-              cursorColor: DockColors.iron100,
-              keyboardType: keyboardType,
-              controller: controller,
-              onChanged: onChanged,
-              obscureText: isPassword,
-              inputFormatters: isID
-                  ? [
-                      IDInputFormatter(),
-                      LengthLimitingTextInputFormatter(12),
-                    ]
-                  : [],
-            ),
+              if (isRequired)
+                Text(
+                  '*',
+                  style: DockTheme.h2.copyWith(color: DockColors.danger100),
+                ),
+            ],
           ),
-        ],
-      ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: TextField(
+            decoration: InputDecoration(
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 11.5),
+              hintText: title,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(
+                  color: DockColors.iron100,
+                  width: 1,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(
+                  color: DockColors.iron100,
+                  width: 1,
+                ),
+              ),
+            ),
+            cursorColor: DockColors.iron100,
+            keyboardType: keyboardType,
+            controller: controller,
+            onChanged: onChanged,
+            obscureText: isPassword,
+            inputFormatters: isID
+                ? [
+                    IDInputFormatter(),
+                    LengthLimitingTextInputFormatter(12),
+                  ]
+                : [],
+          ),
+        ),
+      ],
     );
   }
 }
