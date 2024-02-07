@@ -20,7 +20,7 @@ class ImagePickerWidget extends StatelessWidget {
         return GestureDetector(
           onTap: () => _showImagePickerDialog(context, state),
           child: Padding(
-            padding: const EdgeInsets.only(right: 16, bottom: 8),
+            padding: const EdgeInsets.only(right: 8, bottom: 8),
             child: _buildImageContainer(hasImage, state),
           ),
         );
@@ -34,7 +34,7 @@ class ImagePickerWidget extends StatelessWidget {
         Container(
           //infinity width
           width: double.infinity,
-          height: 300,
+          height: 280,
           decoration: BoxDecoration(
             color: Colors.transparent,
             borderRadius: BorderRadius.circular(8.0),
@@ -44,21 +44,15 @@ class ImagePickerWidget extends StatelessWidget {
             ),
           ),
           child: (hasImage && state.user.picture.isNotEmpty)
-              ? Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Image.memory(
-                    base64Decode(state.user.picture),
-                    fit: BoxFit.cover,
-                  ),
+              ? Image.memory(
+                  base64Decode(state.user.picture),
+                  fit: BoxFit.cover,
                 )
               : const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Icon(
-                      Icons.document_scanner_outlined,
-                      color: DockColors.iron80,
-                      size: 45,
-                    ),
+                  child: Icon(
+                    Icons.document_scanner_outlined,
+                    color: DockColors.iron80,
+                    size: 45,
                   ),
                 ),
         ),
