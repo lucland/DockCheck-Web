@@ -83,8 +83,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: DockTheme.theme,
-      home: Login(),
-      //home: const Home(),
+      //home: Login(),
+      home: const Home(),
     );
   }
 }
