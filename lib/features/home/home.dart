@@ -54,29 +54,6 @@ class _HomeState extends State<Home> {
                       ),
                     ),
                     const SizedBox(
-                      height: 8,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Container(
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: DockColors.iron30,
-                          borderRadius: BorderRadius.circular(0),
-                        ),
-                        child: Center(
-                          child: Text(
-                            'DOF',
-                            style: DockTheme.h1.copyWith(
-                              color: DockColors.iron100,
-                              fontSize: 30,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
                       height: 24,
                     ),
                     InkWell(
