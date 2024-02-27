@@ -13,6 +13,7 @@ class DockTheme {
     textTheme: defaultTextTheme,
     appBarTheme: defaultAppBarTheme,
     tabBarTheme: defaultTabBarTheme,
+    cardTheme: defaultCardTheme,
     bottomAppBarTheme: defaultBottomAppBarTheme,
     scaffoldBackgroundColor: DockColors.background,
     colorScheme: const ColorScheme(
@@ -321,6 +322,14 @@ class DockTheme {
     borderRadius: const BorderRadius.all(Radius.circular(_kBorderRadius)),
     boxShadow: [DockTheme.defaultShadow],
   );
+
+  static final defaultCardTheme = CardTheme(
+      elevation: 4.0,
+      surfaceTintColor: DockColors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(8)),
+      ),
+      shadowColor: DockColors.slate100.withOpacity(0.1));
 
   static final outlinedCardDecoration = BoxDecoration(
     color: DockColors.white,
