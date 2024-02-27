@@ -50,11 +50,12 @@ class CadastrarCubit extends Cubit<CadastrarState> {
               lastAreaFound: '',
               lastTimeFound: DateTime.now(),
               isBlocked: false,
+              documentsOk: false,
               blockReason: '-',
               status: '-',
             ),
             event: Event(
-              id: Uuid().v4(),
+              id: const Uuid().v4(),
               employeeId: '-',
               timestamp: DateTime.now(),
               projectId: '-',
@@ -189,11 +190,12 @@ class CadastrarCubit extends Cubit<CadastrarState> {
           lastAreaFound: '',
           lastTimeFound: DateTime.now(),
           isBlocked: false,
+          documentsOk: false,
           blockReason: '-',
           status: '-',
         ),
         event: Event(
-          id: Uuid().v4(),
+          id: const Uuid().v4(),
           employeeId: '-',
           timestamp: DateTime.now(),
           projectId: '-',
@@ -290,7 +292,8 @@ class CadastrarCubit extends Cubit<CadastrarState> {
 
   Future<void> createEmployee() async {
     if (!isClosed) {
-      final employee = state.employee.copyWith(id: Uuid().v1());
+      final employee =
+          state.employee.copyWith(id: const Uuid().v1(), documentsOk: true);
       emit(state.copyWith(employee: employee));
       try {
         await employeeRepository.createEmployee(state.employee);
