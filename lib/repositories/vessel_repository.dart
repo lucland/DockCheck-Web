@@ -1,89 +1,71 @@
-import '../models/vessel.dart';
+import 'dart:async';
+
+import '../models/vessel.dart'; // Make sure to import the corresponding model
 import '../services/api_service.dart';
-import '../services/local_storage_service.dart';
 import '../utils/simple_logger.dart';
 
 class VesselRepository {
   final ApiService apiService;
-  final LocalStorageService localStorageService;
 
-  VesselRepository(this.apiService, this.localStorageService);
+  VesselRepository(this.apiService);
 
-  Future<Vessel> getVessel(String id) async {
-    final data = await apiService.get('vessels/$id');
-    SimpleLogger.info('Vessel: $data');
-    return Vessel.fromJson(data);
-  }
-
-  Future<List<Vessel>> getVesselsByName(String name) async {
+  Future<Vessel?> createVessel(Map<String, dynamic> vesselData) async {
     try {
-      final data = await apiService.get('vessels/name/$name');
-      return (data as List).map((item) => Vessel.fromJson(item)).toList();
+      final data = await apiService.post('vessels', vesselData);
+      return Vessel.fromJson(data['vessel']);
     } catch (e) {
-      SimpleLogger.severe('Failed to get vessels by name: ${e.toString()}');
-      return [];
+      SimpleLogger.severe('Failed to create vessel: ${e.toString()}');
+      return null; // Return null as a fallback
     }
   }
 
-  Future<Vessel> updateVessel(String id, Vessel vessel) async {
+  Future<Vessel?> getVesselById(String vesselId) async {
     try {
-      final data = await apiService.put('vessels/$id', vessel.toJson());
+      final data = await apiService.get('vessels/$vesselId');
+      return Vessel.fromJson(data);
+    } catch (e) {
+      SimpleLogger.severe('Failed to get vessel: ${e.toString()}');
+      return null;
+    }
+  }
+
+  Future<Vessel?> updateVessel(
+      String vesselId, Map<String, dynamic> updateData) async {
+    try {
+      final data = await apiService.put('vessels/$vesselId', updateData);
       return Vessel.fromJson(data);
     } catch (e) {
       SimpleLogger.severe('Failed to update vessel: ${e.toString()}');
-      vessel.status = 'pending_update';
-      return vessel;
+      return null;
     }
   }
 
-  Future<void> deleteVessel(String id) async {
+  Future<void> deleteVessel(String vesselId) async {
     try {
-      await apiService.delete('vessels/$id');
+      await apiService.delete('vessels/$vesselId');
+      SimpleLogger.info('Vessel deleted successfully');
     } catch (e) {
       SimpleLogger.severe('Failed to delete vessel: ${e.toString()}');
-      // Handle deletion failure
     }
   }
 
   Future<List<Vessel>> getVesselsByCompany(String companyId) async {
     try {
       final data = await apiService.get('vessels/company/$companyId');
-      return (data as List).map((item) => Vessel.fromJson(item)).toList();
+      return List<Vessel>.from(data.map((x) => Vessel.fromJson(x)));
     } catch (e) {
       SimpleLogger.severe('Failed to get vessels by company: ${e.toString()}');
-      return []; // Return an empty list as a fallback
+      return [];
     }
   }
 
   Future<List<Vessel>> getAllVessels() async {
     try {
       final data = await apiService.get('vessels');
-      return (data as List).map((item) => Vessel.fromJson(item)).toList();
+      return List<Vessel>.from(data.map((x) => Vessel.fromJson(x)));
     } catch (e) {
       SimpleLogger.severe('Failed to get all vessels: ${e.toString()}');
-      return []; // Return an empty list as a fallback
+      return [];
     }
-  }
-
-  //get onboarded users of a vessel with /vessels/onboarded/{id}/
-  Future<List<String>> getOnboardedUsers(String id) async {
-    final data = await apiService.get('vessels/onboarded/$id');
-    return (data as List).map((item) => item.toString()).toList();
-  }
-
-  Future<Vessel> createVessel(Vessel vessel) async {
-    try {
-      final data = await apiService.post('vessels/create', vessel.toJson());
-      return Vessel.fromJson(data);
-    } catch (e) {
-      SimpleLogger.severe('Failed to create vessel: ${e.toString()}');
-      vessel.status = 'pending_creation'; // Assuming 'status' field exists
-      return vessel;
-    }
-  }
-
-  Future<List<String>> getAllVesselsIdsFromServer() async {
-    final data = await apiService.get('vessels/ids');
-    return (data as List).map((item) => item.toString()).toList();
   }
 }
