@@ -16,7 +16,7 @@ class ImagePickerWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<CadastrarCubit, CadastrarState>(
       builder: (context, state) {
-        bool hasImage = state.user.picture.isNotEmpty;
+        bool hasImage = state.picture.base64.isNotEmpty;
         return GestureDetector(
           onTap: () => _showImagePickerDialog(context, state),
           child: Padding(
@@ -43,9 +43,9 @@ class ImagePickerWidget extends StatelessWidget {
               width: 1.0,
             ),
           ),
-          child: (hasImage && state.user.picture.isNotEmpty)
+          child: (hasImage && state.picture.base64.isNotEmpty)
               ? Image.memory(
-                  base64Decode(state.user.picture),
+                  base64Decode(state.picture.base64),
                   fit: BoxFit.cover,
                 )
               : const Center(
@@ -61,7 +61,7 @@ class ImagePickerWidget extends StatelessWidget {
   }
 
   void _showImagePickerDialog(BuildContext context, CadastrarState state) {
-    bool hasImage = state.user.picture.isNotEmpty;
+    bool hasImage = state.picture.base64.isNotEmpty;
 
     showDialog(
       context: context,
