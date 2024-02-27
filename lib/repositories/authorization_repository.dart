@@ -1,15 +1,13 @@
 import 'dart:async';
 
-import '../models/authorization.dart';
+import '../models/authorization.dart'; // Make sure to import the corresponding model
 import '../services/api_service.dart';
-import '../services/local_storage_service.dart';
 import '../utils/simple_logger.dart';
 
 class AuthorizationRepository {
   final ApiService apiService;
-  final LocalStorageService localStorageService;
 
-  AuthorizationRepository(this.apiService, this.localStorageService);
+  AuthorizationRepository(this.apiService);
 
   Future<Authorization> createAuthorization(Authorization authorization) async {
     try {
@@ -27,10 +25,9 @@ class AuthorizationRepository {
     return Authorization.fromJson(data);
   }
 
-  Future<List<Authorization>> getAuthorizations(String userId) async {
+  Future<List<Authorization>> getAllAuthorizations() async {
     try {
-      final data = await apiService.get('authorizations/user/$userId');
-      SimpleLogger.info(data.toString());
+      final data = await apiService.get('authorizations');
       return (data as List)
           .map((item) => Authorization.fromJson(item))
           .toList();
@@ -48,7 +45,6 @@ class AuthorizationRepository {
       return Authorization.fromJson(data);
     } catch (e) {
       SimpleLogger.severe('Failed to update authorization: ${e.toString()}');
-      authorization.status = 'pending_update'; // Assuming 'status' field exists
       return authorization;
     }
   }
@@ -57,14 +53,48 @@ class AuthorizationRepository {
     await apiService.delete('authorizations/$id');
   }
 
-  Future<List<Authorization>> getAuthorizationsFromServer() async {
-    final data = await apiService.get('authorizations');
-    return (data as List).map((item) => Authorization.fromJson(item)).toList();
-  }
-
-  //getAuthorizationIdsFromServer returns a list of authorization ids
-  Future<List<String>> getAuthorizationIdsFromServer() async {
+  Future<List<String>> getAllAuthorizationIds() async {
     final data = await apiService.get('authorizations/ids');
     return (data as List).map((item) => item.toString()).toList();
+  }
+
+  Future<void> addAuthorizationToEmployee(
+      String employeeId, String authorizationId) async {
+    try {
+      final employee = await apiService.get('employees/$employeeId');
+      if (employee == null) {
+        SimpleLogger.severe('Employee not found');
+        return;
+      }
+      final currentAuthorizations = employee['authorizations_id'] ?? [];
+      final updatedAuthorizations = [...currentAuthorizations, authorizationId];
+      employee['authorizations_id'] = updatedAuthorizations;
+      await apiService.put('employees/$employeeId', employee);
+      SimpleLogger.info('Authorization added to employee successfully');
+    } catch (e) {
+      SimpleLogger.severe(
+          'Error adding authorization to employee: ${e.toString()}');
+    }
+  }
+
+  Future<void> removeAuthorizationFromEmployee(
+      String employeeId, String authorizationId) async {
+    try {
+      final employee = await apiService.get('employees/$employeeId');
+      if (employee == null) {
+        SimpleLogger.severe('Employee not found');
+        return;
+      }
+      final currentAuthorizations = employee['authorizations_id'] ?? [];
+      final updatedAuthorizations = currentAuthorizations
+          .where((authId) => authId != authorizationId)
+          .toList();
+      employee['authorizations_id'] = updatedAuthorizations;
+      await apiService.put('employees/$employeeId', employee);
+      SimpleLogger.info('Authorization removed from employee successfully');
+    } catch (e) {
+      SimpleLogger.severe(
+          'Error removing authorization from employee: ${e.toString()}');
+    }
   }
 }
