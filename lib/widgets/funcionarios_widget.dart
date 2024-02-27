@@ -1,10 +1,10 @@
 import 'package:dockcheck_web/features/home/bloc/pesquisar_cubit.dart';
+import 'package:dockcheck_web/models/employee.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../features/details/details.dart';
 import '../features/home/bloc/pesquisar_state.dart';
-import '../models/user.dart';
 import '../utils/colors.dart';
 import '../utils/strings.dart';
 import '../utils/theme.dart';
@@ -20,7 +20,7 @@ class FuncionariosWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.read<PesquisarCubit>().fetchUsers();
+    context.read<PesquisarCubit>().fetchEmployees();
 
     return BlocBuilder<PesquisarCubit, PesquisarState>(
       builder: (context, state) {
@@ -38,11 +38,11 @@ class FuncionariosWidget extends StatelessWidget {
             ),
           );
         } else if (state is PesquisarLoaded) {
-          List<User> displayedUsers = state.users;
+          List<Employee> displayEmployees = state.employees;
 
           if (context.read<PesquisarCubit>().isSearching) {
-            displayedUsers = displayedUsers
-                .where((user) => user.name.toLowerCase().contains(
+            displayEmployees = displayEmployees
+                .where((employee) => employee.name.toLowerCase().contains(
                     context.read<PesquisarCubit>().searchQuery.toLowerCase()))
                 .toList();
           }
@@ -198,7 +198,7 @@ class FuncionariosWidget extends StatelessWidget {
                         ),
                       ),
                       onSubmitted: (value) {
-                        context.read<PesquisarCubit>().searchUsers(value);
+                        context.read<PesquisarCubit>().searchEmployee(value);
                       },
                     ),
                     Padding(
@@ -211,10 +211,10 @@ class FuncionariosWidget extends StatelessWidget {
                             SizedBox(
                               height: MediaQuery.of(context).size.height - 200,
                               child: ListView.builder(
-                                itemCount: displayedUsers.length,
+                                itemCount: displayEmployees.length,
                                 itemBuilder: (context, index) {
-                                  User user = displayedUsers[index];
-                                  return _buildUserListTile(context, user);
+                                  Employee employee = displayEmployees[index];
+                                  return _buildUserListTile(context, employee);
                                 },
                               ),
                             ),
@@ -234,7 +234,7 @@ class FuncionariosWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildUserListTile(BuildContext context, User user) {
+  Widget _buildUserListTile(BuildContext context, Employee employee) {
     return Container(
       decoration: const BoxDecoration(
         border: Border(
@@ -247,32 +247,32 @@ class FuncionariosWidget extends StatelessWidget {
       child: ListTile(
         trailing:
             const Icon(Icons.chevron_right_rounded, color: DockColors.slate100),
-        title: Text(user.name, style: DockTheme.h2),
+        title: Text(employee.name, style: DockTheme.h2),
         titleAlignment: ListTileTitleAlignment.center,
         dense: true,
         visualDensity: VisualDensity.compact,
         horizontalTitleGap: 0,
-        leading: _buildLeadingIcon(user),
-        subtitle: Text(user.cpf.toString()),
+        leading: _buildLeadingIcon(employee),
+        subtitle: Text(employee.cpf.toString()),
         onTap: () {
-          _openRightSideModal(context, user);
+          _openRightSideModal(context, employee);
         },
       ),
     );
   }
 
-  void _openRightSideModal(BuildContext context, User user) {
+  void _openRightSideModal(BuildContext context, Employee employee) {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
         return FractionallySizedBox(
           heightFactor: 1,
-          child: Container(
+          child: SizedBox(
             width: MediaQuery.of(context).size.width *
                 0.5, // 50% width of the screen
             child: Details(
-                user:
-                    user), // Assuming Details widget takes a user as a parameter
+                employee:
+                    employee), // Assuming Details widget takes a user as a parameter
           ),
         );
       },
@@ -281,14 +281,14 @@ class FuncionariosWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildLeadingIcon(User user) {
-    if (user.isBlocked) {
+  Widget _buildLeadingIcon(Employee employee) {
+    if (employee.isBlocked) {
       return const Icon(
         Icons.circle,
         color: DockColors.danger100,
         size: 10,
       );
-    } else if (user.isOnboarded) {
+    } else if (employee.documentsOk) {
       return const Icon(
         Icons.circle,
         color: DockColors.success100,
