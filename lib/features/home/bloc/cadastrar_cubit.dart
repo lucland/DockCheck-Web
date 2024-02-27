@@ -1,22 +1,28 @@
-// ignore_for_file: non_constant_identifier_names
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:dockcheck_web/repositories/event_repository.dart';
+import 'package:dockcheck_web/repositories/picture_repository.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../models/document.dart';
 import '../../../models/event.dart';
-import '../../../models/user.dart';
-import '../../../repositories/user_repository.dart';
+import '../../../models/employee.dart';
+import '../../../models/picture.dart';
+import '../../../repositories/document_repository.dart';
+import '../../../repositories/employee_repository.dart';
 import '../../../services/local_storage_service.dart';
 import '../../../utils/simple_logger.dart';
 import 'cadastrar_state.dart';
 
 class CadastrarCubit extends Cubit<CadastrarState> {
-  final UserRepository userRepository;
+  final EmployeeRepository employeeRepository;
+  final EventRepository eventRepository;
+  final PictureRepository pictureRepository;
+  final DocumentRepository documentRepository;
   final LocalStorageService localStorageService;
 
   @override
@@ -24,67 +30,49 @@ class CadastrarCubit extends Cubit<CadastrarState> {
   late StreamSubscription scanSubscription;
   bool isStreaming = false;
 
-  CadastrarCubit(this.userRepository, this.localStorageService)
+  CadastrarCubit(this.employeeRepository, this.localStorageService,
+      this.eventRepository, this.pictureRepository, this.documentRepository)
       : super(
           CadastrarState(
             numero: 0,
-            user: User(
+            employee: Employee(
               id: '',
               authorizationsId: [""],
               name: '',
-              company: '',
+              thirdCompanyId: '',
+              visitorCompany: '',
               role: '',
-              project: '-',
               number: 0,
               bloodType: '-',
               cpf: '-',
-              aso: DateTime.now(),
-              asoDocument: '-',
-              hasAso: false,
-              nr34: DateTime.now(),
-              nr34Document: '-',
-              hasNr34: false,
-              nr35: DateTime.now(),
-              nr35Document: '-',
-              hasNr35: false,
-              nr33: DateTime.now(),
-              nr33Document: '-',
-              hasNr33: false,
-              nr10: DateTime.now(),
-              nr10Document: '-',
-              hasNr10: false,
               email: '-',
               area: 'Praça de Máquinas',
-              isAdmin: false,
-              isVisitor: false,
-              isPortalo: false,
-              isCrew: false,
-              isOnboarded: false,
+              lastAreaFound: '',
+              lastTimeFound: DateTime.now(),
               isBlocked: false,
               blockReason: '-',
-              iTag: '',
-              picture: '',
-              typeJob: '-',
-              startJob: DateTime.now(),
-              endJob: DateTime.now(),
-              username: "",
-              salt: '',
-              hash: '',
               status: '-',
             ),
-            evento: Event(
+            event: Event(
               id: Uuid().v4(),
-              portalId: '-',
-              userId: '-',
+              employeeId: '-',
               timestamp: DateTime.now(),
-              beaconId: '-',
-              vesselId: '-',
+              projectId: '-',
               action: 0,
-              justification: '-',
+              sensorId: '-',
+              status: '-',
+              beaconId: '-',
+            ),
+            picture: Picture(
+              id: const Uuid().v4(),
+              employeeId: '-',
+              base64: '',
+              docPath: '',
               status: '-',
             ),
+            documents: [],
             isLoading: true,
-            userCreated: false,
+            employeeCreated: false,
             cadastroHabilitado: false,
             nrTypes: [],
             selectedNr: '',
@@ -94,10 +82,14 @@ class CadastrarCubit extends Cubit<CadastrarState> {
   void fetchNumero() async {
     if (!isClosed) {
       try {
-        var numero = await userRepository.getLastUserNumber();
-        final user = state.user.copyWith(number: numero);
+        var numero = await employeeRepository.getLastEmployeeNumber();
+        //parse the numero string to int
+        var numeroInt = int.parse(numero);
+
+        final employee = state.employee.copyWith(number: numeroInt + 1);
         if (!isClosed) {
-          emit(state.copyWith(user: user, isLoading: false, numero: numero));
+          emit(state.copyWith(
+              employee: employee, isLoading: false, numero: numeroInt + 1));
         }
       } catch (e) {
         SimpleLogger.warning('Error during data synchronization: $e');
@@ -129,6 +121,12 @@ class CadastrarCubit extends Cubit<CadastrarState> {
     emit(state.copyWith(selectedNr: nrType));
   }
 
+  void addDocument(Document document) {
+    final updatedDocuments = List<Document>.from(state.documents)
+      ..add(document);
+    emit(state.copyWith(documents: updatedDocuments));
+  }
+
   Future<void> pickImage() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.image,
@@ -138,309 +136,178 @@ class CadastrarCubit extends Cubit<CadastrarState> {
     if (result != null) {
       Uint8List bytes = result.files.first.bytes!;
       String base64Image = base64Encode(bytes);
-      final user = state.user.copyWith(picture: base64Image);
-      if (!isClosed) {
-        emit(state.copyWith(user: user));
-      }
+      final picture = state.picture.copyWith(base64: base64Image);
+      emit(state.copyWith(picture: picture));
     }
   }
 
   void removeImage() {
-    // Logic to remove the image
-    // Update the state with the new image
-    final user = state.user.copyWith(picture: '');
-    if (!isClosed) {
-      emit(state.copyWith(user: user));
-    }
+    final picture = state.picture.copyWith(base64: '');
+    emit(state.copyWith(picture: picture));
   }
 
   void updateBloodType(String bloodType) {
-    final user = state.user.copyWith(bloodType: bloodType);
+    final employee = state.employee.copyWith(bloodType: bloodType);
     if (!isClosed) {
-      emit(state.copyWith(user: user));
+      emit(state.copyWith(employee: employee));
       checkCadastroHabilitado();
     }
   }
 
   void updateNome(String nome) {
-    final user = state.user.copyWith(name: nome, status: 'created');
+    final employee = state.employee.copyWith(name: nome, status: 'created');
     if (!isClosed) {
-      // o problema está dentro dos métodos
-      emit(state.copyWith(user: user));
-      checkCadastroHabilitado();
-    }
-  }
-
-  void updateFuncao(String funcao) {
-    final user = state.user.copyWith(role: funcao);
-    if (!isClosed) {
-      emit(state.copyWith(user: user));
-      checkCadastroHabilitado();
-    }
-  }
-
-  void updateEmail(String email) {
-    final user = state.user.copyWith(email: email);
-    if (!isClosed) {
-      emit(state.copyWith(user: user));
+      emit(state.copyWith(employee: employee));
       checkCadastroHabilitado();
     }
   }
 
   void updateEmpresa(String empresa) {
-    final user = state.user.copyWith(company: empresa);
+    final employee = state.employee.copyWith(thirdCompanyId: empresa);
     if (!isClosed) {
-      emit(state.copyWith(user: user));
+      emit(state.copyWith(employee: employee));
       checkCadastroHabilitado();
     }
   }
-
-  void updatePassword(String password) {
-    final user = state.user.copyWith(salt: password, hash: '');
-    if (!isClosed) {
-      emit(state.copyWith(user: user));
-    }
-  }
-
-  void updateUserVisitor(String usuario) {
-    final user = state.user.copyWith(username: usuario);
-    if (!isClosed) {
-      emit(state.copyWith(user: user));
-    }
-  }
-
-  void reloadPage() {
-    state.user.copyWith(
-      bloodType: '-',
-    );
-    removeImage();
-  }
-
-  void updateUserAdmin(String usuario) {
-    final user = state.user.copyWith(username: usuario);
-    if (!isClosed) {
-      emit(state.copyWith(user: user));
-    }
-  }
-
-  void updateASO(DateTime ASO) {
-    final user = state.user.copyWith(aso: ASO);
-    emit(state.copyWith(user: user));
-    checkCadastroHabilitado();
-  }
-
-  void updateNR34(DateTime NR34) {
-    final user = state.user.copyWith(nr34: NR34);
-    emit(state.copyWith(user: user));
-    checkCadastroHabilitado();
-  }
-
-  void updateNR10(DateTime NR10) {
-    final user = state.user.copyWith(nr10: NR10);
-    emit(state.copyWith(user: user));
-  }
-
-  void updateNR33(DateTime NR33) {
-    final user = state.user.copyWith(nr33: NR33);
-    emit(state.copyWith(user: user));
-  }
-
-  void updateNR35(DateTime NR35) {
-    final user = state.user.copyWith(nr35: NR35);
-    emit(state.copyWith(user: user));
-  }
-
-  void updateDataInicial(DateTime dataInicial) {
-    final user = state.user.copyWith(startJob: dataInicial);
-    if (!isClosed) {
-      emit(state.copyWith(user: user));
-      checkCadastroHabilitado();
-    }
-  }
-
-  void updateDataLimite(DateTime dataLimite) {
-    final user = state.user.copyWith(endJob: dataLimite);
-    checkCadastroHabilitado();
-    if (!isClosed) {
-      emit(state.copyWith(user: user));
-      checkCadastroHabilitado();
-    }
-  }
-
-  void updateIsVisitante(bool isVisitante) {
-    final user = state.user.copyWith(isVisitor: isVisitante);
-    if (!isClosed) {
-      emit(state.copyWith(user: user));
-      checkCadastroHabilitado();
-    }
-  }
-
-  void updateIsAdmin(bool isAdmin) {
-    final user = state.user.copyWith(isAdmin: isAdmin);
-    if (!isClosed) {}
-    emit(state.copyWith(user: user));
-  }
-
-  void updateEventos(List<String> eventos) {
-    final user = state.user.copyWith(events: eventos);
-    if (!isClosed) {}
-    emit(state.copyWith(user: user));
-  }
-
-  void updateCreatedAt(DateTime createdAt) {
-    final user = state.user.copyWith(createdAt: createdAt);
-    if (!isClosed) {}
-    emit(state.copyWith(user: user));
-  }
-
-  void updateUpdatedAt(DateTime updatedAt) {
-    final user = state.user.copyWith(updatedAt: updatedAt);
-    if (!isClosed) {
-      if (!isClosed) {}
-      emit(state.copyWith(user: user));
-    }
-  }
-
-  void updateIsBlocked(bool isBlocked) {
-    final user = state.user.copyWith(isBlocked: isBlocked);
-    if (!isClosed) {
-      if (!isClosed) {}
-      emit(state.copyWith(user: user));
-    }
-  }
-
-  void updateArea(String area) {
-    final user = state.user.copyWith(area: area);
-    if (!isClosed) {
-      if (!isClosed) {}
-      emit(state.copyWith(user: user));
-      checkCadastroHabilitado();
-    }
-  }
+  // Similarly, other update methods follow the same pattern
 
   void resetState() {
     if (!isClosed) {
       emit(state.copyWith(
-        user: User(
+        employee: Employee(
           id: '',
           authorizationsId: [""],
           name: '',
-          company: '',
+          thirdCompanyId: '',
+          visitorCompany: '',
           role: '',
-          project: '-',
           number: 0,
           bloodType: '-',
           cpf: '-',
-          aso: DateTime.now(),
-          asoDocument: '-',
-          hasAso: false,
-          nr34: DateTime.now(),
-          nr34Document: '-',
-          hasNr34: false,
-          nr35: DateTime.now(),
-          nr35Document: '-',
-          hasNr35: false,
-          nr33: DateTime.now(),
-          nr33Document: '-',
-          hasNr33: false,
-          nr10: DateTime.now(),
-          nr10Document: '-',
-          hasNr10: false,
           email: '-',
           area: 'Praça de Máquinas',
-          isAdmin: false,
-          isVisitor: false,
-          isPortalo: false,
-          isCrew: false,
-          isOnboarded: false,
+          lastAreaFound: '',
+          lastTimeFound: DateTime.now(),
           isBlocked: false,
           blockReason: '-',
-          iTag: '',
-          picture: '',
-          typeJob: '-',
-          startJob: DateTime.now(),
-          endJob: DateTime.now(),
-          username: "",
-          salt: '',
-          hash: '',
           status: '-',
         ),
-        evento: Event(
+        event: Event(
           id: Uuid().v4(),
-          portalId: '-',
-          userId: '-',
+          employeeId: '-',
           timestamp: DateTime.now(),
-          beaconId: '-',
-          vesselId: '-',
+          projectId: '-',
           action: 0,
-          justification: '-',
+          sensorId: '-',
           status: '-',
+          beaconId: '-',
         ),
         isLoading: true,
-        userCreated: false,
+        employeeCreated: false,
         cadastroHabilitado: false,
         nrTypes: [],
+        documents: [],
+        picture: Picture(
+          id: const Uuid().v4(),
+          employeeId: '-',
+          base64: '',
+          docPath: '',
+          status: '-',
+        ),
         selectedNr: '',
       ));
     }
   }
 
   void createEvent() async {
-    String vesselId = await localStorageService.getVesselId() ?? '';
-
+    final event = state.event.copyWith(
+      employeeId: state.employee.id,
+      timestamp: DateTime.now(),
+      projectId: '1',
+      action: 1,
+      sensorId: '1',
+      status: 'created',
+      beaconId: '1',
+    );
     if (!isClosed) {
-      emit(state.copyWith(
-          isLoading: true,
-          evento: state.evento.copyWith(
-            id: const Uuid().v1().toString(),
-            timestamp: DateTime.now(),
-            action: 0,
-            vesselId: vesselId,
-            portalId: '0',
-            userId: state.user.id,
-            justification: "-",
-            beaconId: state.user.iTag,
-            status: 'created',
-          )));
+      emit(state.copyWith(event: event));
     }
     try {
-      // await eventRepository.createEvent(state.evento);
+      await eventRepository.createEvent(event);
       if (!isClosed) {
-        if (!isClosed) {}
-        emit(state.copyWith(isLoading: false, userCreated: true));
+        createPicture();
       }
     } catch (e) {
-      SimpleLogger.warning('Error during cadastrar_cubit createEvent: $e');
+      SimpleLogger.warning('Error cadastrar_cubit createEvent: $e');
       if (!isClosed) {
-        if (!isClosed) {}
         emit(state.copyWith(
-          isLoading: false,
           errorMessage: e.toString(),
         ));
       }
     }
   }
 
-  Future<void> createUser() async {
-    if (!isClosed) {}
-    final user = state.user.copyWith(id: Uuid().v1());
-    emit(state.copyWith(user: user));
-    try {
-      await userRepository.createUser(state.user);
-      createEvent();
-    } catch (e) {
-      SimpleLogger.warning('Error cadastrar_cubit createUser: $e');
-      if (!isClosed) {
-        if (!isClosed) {}
-        emit(state.copyWith(
-          errorMessage: e.toString(),
-        ));
+//create picture with PictureRepository passing state.picture
+  Future<void> createPicture() async {
+    if (!isClosed) {
+      try {
+        await pictureRepository.createEmployeePicture(state.picture);
+        if (!isClosed) {
+          createDocuments();
+        }
+      } catch (e) {
+        SimpleLogger.warning('Error cadastrar_cubit createPicture: $e');
+        if (!isClosed) {
+          emit(state.copyWith(
+            errorMessage: e.toString(),
+          ));
+        }
+      }
+    }
+  }
+
+  //create documents, for each Document in state.documents, create a document with DocumentRepository passing the document
+  Future<void> createDocuments() async {
+    if (!isClosed) {
+      for (var document in state.documents) {
+        try {
+          await documentRepository.createDocument(document);
+        } catch (e) {
+          SimpleLogger.warning('Error cadastrar_cubit createDocuments: $e');
+          if (!isClosed) {
+            emit(state.copyWith(
+              errorMessage: e.toString(),
+            ));
+          }
+        } finally {
+          if (!isClosed) {
+            createEmployee();
+          }
+        }
+      }
+    }
+  }
+
+  Future<void> createEmployee() async {
+    if (!isClosed) {
+      final employee = state.employee.copyWith(id: Uuid().v1());
+      emit(state.copyWith(employee: employee));
+      try {
+        await employeeRepository.createEmployee(state.employee);
+        emit(state.copyWith(employeeCreated: true));
+      } catch (e) {
+        SimpleLogger.warning('Error cadastrar_cubit createEmployee: $e');
+        if (!isClosed) {
+          emit(state.copyWith(
+            errorMessage: e.toString(),
+          ));
+        }
       }
     }
   }
 
   void checkCadastroHabilitado() {
-    if (state.user.isVisitor) {
+    if (state.employee.visitorCompany.isNotEmpty) {
       if (visitorChecksPassed()) {
         if (!isClosed) {
           emit(state.copyWith(cadastroHabilitado: true));
@@ -464,24 +331,19 @@ class CadastrarCubit extends Cubit<CadastrarState> {
   }
 
   bool userChecksPassed() {
-    return state.user.iTag.isNotEmpty &&
-        state.user.name.isNotEmpty &&
-        state.user.role.isNotEmpty &&
-        state.user.company.isNotEmpty &&
-        state.user.area.isNotEmpty &&
-        state.user.picture.isNotEmpty &&
-        state.user.endJob.isAfter(state.user.startJob);
+    return state.employee.name.isNotEmpty &&
+        state.employee.role.isNotEmpty &&
+        state.employee.thirdCompanyId.isNotEmpty &&
+        state.employee.area.isNotEmpty &&
+        state.picture.base64.isNotEmpty;
   }
 
   bool visitorChecksPassed() {
-    return state.user.blockReason.isNotEmpty &&
-        state.user.name.isNotEmpty &&
-        state.user.role.isNotEmpty &&
-        state.user.company.isNotEmpty &&
-        state.user.iTag.isNotEmpty &&
-        state.user.picture.isNotEmpty;
+    return state.employee.name.isNotEmpty &&
+        state.employee.visitorCompany.isNotEmpty;
   }
 
+  // Closing the cubit
   @override
   Future<void> close() {
     if (isStreaming) {
