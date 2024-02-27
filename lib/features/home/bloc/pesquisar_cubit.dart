@@ -1,40 +1,40 @@
+import 'package:dockcheck_web/models/employee.dart';
+import 'package:dockcheck_web/repositories/employee_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../models/user.dart';
-import '../../../repositories/user_repository.dart';
 import '../../../utils/simple_logger.dart';
 import 'pesquisar_state.dart';
 
 class PesquisarCubit extends Cubit<PesquisarState> {
-  final UserRepository userRepository;
-  List<User> allUsers = [];
-  List<User> filteredUsers = [];
+  final EmployeeRepository employeeRepository;
+  List<Employee> allEmployee = [];
+  List<Employee> filteredEmployee = [];
   bool isSearching = false;
   String searchQuery = '';
 
   @override
   bool isClosed = false;
 
-  PesquisarCubit(this.userRepository) : super(PesquisarInitial());
+  PesquisarCubit(this.employeeRepository) : super(PesquisarInitial());
 
-  Future<void> fetchUsers() async {
+  Future<void> fetchEmployees() async {
     try {
       if (!isClosed) {
         emit(PesquisarLoading());
       }
 
-      allUsers = await userRepository.getAllUsers();
+      allEmployee = await employeeRepository.getAllEmployees();
 
-      if (allUsers.length > 0) {
+      if (allEmployee.isNotEmpty) {
         //order by name
-        allUsers.sort((a, b) => a.name.compareTo(b.name));
+        allEmployee.sort((a, b) => a.name.compareTo(b.name));
       }
 
       if (!isClosed) {
         if (isSearching) {
           _applySearchFilter();
         } else {
-          emit(PesquisarLoaded(allUsers));
+          emit(PesquisarLoaded(allEmployee));
         }
       }
     } catch (e) {
@@ -45,7 +45,7 @@ class PesquisarCubit extends Cubit<PesquisarState> {
     }
   }
 
-  Future<void> searchUsers(String query) async {
+  Future<void> searchEmployee(String query) async {
     try {
       if (!isClosed) {
         emit(PesquisarLoading());
@@ -55,17 +55,17 @@ class PesquisarCubit extends Cubit<PesquisarState> {
       isSearching = true;
 
       // Verifica se já carregou os usuários do banco de dados
-      if (allUsers.isEmpty) {
-        allUsers = await userRepository.getAllUsers();
+      if (allEmployee.isEmpty) {
+        allEmployee = await employeeRepository.getAllEmployees();
       }
 
-      filteredUsers = allUsers
-          .where(
-              (user) => user.name.toLowerCase().contains(query.toLowerCase()))
+      filteredEmployee = allEmployee
+          .where((employee) =>
+              employee.name.toLowerCase().contains(query.toLowerCase()))
           .toList();
 
       if (!isClosed) {
-        emit(PesquisarLoaded(filteredUsers));
+        emit(PesquisarLoaded(filteredEmployee));
       }
     } catch (e) {
       SimpleLogger.warning('Error during data synchronization: $e');
@@ -76,12 +76,12 @@ class PesquisarCubit extends Cubit<PesquisarState> {
   }
 
   void _applySearchFilter() {
-    filteredUsers = allUsers
-        .where((user) =>
-            user.name.toLowerCase().contains(searchQuery.toLowerCase()))
+    filteredEmployee = allEmployee
+        .where((employee) =>
+            employee.name.toLowerCase().contains(searchQuery.toLowerCase()))
         .toList();
 
-    emit(PesquisarLoaded(filteredUsers));
+    emit(PesquisarLoaded(filteredEmployee));
   }
 
   @override
