@@ -33,7 +33,7 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    context.read<PesquisarCubit>().fetchUsers();
+    context.read<PesquisarCubit>().fetchEmployees();
     return Scaffold(
       body: Row(
         children: [
