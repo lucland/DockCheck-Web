@@ -1,47 +1,75 @@
 class Company {
+  String id;
   String name;
   String logo;
-  List<String> supervisors;
-  List<String> vessels;
-  DateTime updatedAt;
-  String id;
-  DateTime expirationDate;
+  String razaoSocial;
+  String cnpj;
+  String address;
+  String telephone;
+  String email;
   String status;
 
   Company({
+    required this.id,
     required this.name,
     required this.logo,
-    required this.supervisors,
-    required this.vessels,
-    required this.updatedAt,
-    required this.id,
-    required this.expirationDate,
+    required this.razaoSocial,
+    required this.cnpj,
+    required this.address,
+    required this.telephone,
+    required this.email,
     required this.status,
   });
 
   factory Company.fromJson(Map<String, dynamic> json) {
     return Company(
+      id: json['id'],
       name: json['name'],
       logo: json['logo'],
-      supervisors: List<String>.from(json['supervisors']),
-      vessels: List<String>.from(json['vessels']),
-      updatedAt: DateTime.parse(json['updated_at']),
-      id: json['id'],
-      expirationDate: DateTime.parse(json['expiration_date']),
+      razaoSocial: json['razao_social'],
+      cnpj: json['cnpj'],
+      address: json['address'],
+      telephone: json['telephone'],
+      email: json['email'],
       status: json['status'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'name': name,
       'logo': logo,
-      'supervisors': supervisors,
-      'vessels': vessels,
-      'updated_at': updatedAt.toIso8601String(),
-      'id': id,
-      'expiration_date': expirationDate.toIso8601String(),
+      'razao_social': razaoSocial,
+      'cnpj': cnpj,
+      'address': address,
+      'telephone': telephone,
+      'email': email,
       'status': status,
     };
+  }
+
+  Company copyWith({
+    String? id,
+    String? name,
+    String? logo,
+    String? razaoSocial,
+    String? cnpj,
+    String? address,
+    String? telephone,
+    String? email,
+    String? status,
+  }) {
+    return Company(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      logo: logo ?? this.logo,
+      razaoSocial: razaoSocial ?? this.razaoSocial,
+      cnpj: cnpj ?? this.cnpj,
+      address: address ?? this.address,
+      telephone: telephone ?? this.telephone,
+      email: email ?? this.email,
+      status: status ?? this.status,
+    );
   }
 }
