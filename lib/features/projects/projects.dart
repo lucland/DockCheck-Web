@@ -1,8 +1,8 @@
 import 'package:dockcheck_web/features/home/bloc/pesquisar_cubit.dart';
+import 'package:dockcheck_web/models/employee.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../models/user.dart';
 import '../../utils/colors.dart';
 import '../../utils/theme.dart';
 import '../../widgets/cadastrar_modal_widget.dart';
@@ -16,7 +16,7 @@ class Projects extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.read<PesquisarCubit>().fetchUsers();
+    context.read<PesquisarCubit>().fetchEmployees();
 
     return BlocBuilder<PesquisarCubit, PesquisarState>(
       builder: (context, state) {
@@ -34,11 +34,11 @@ class Projects extends StatelessWidget {
             ),
           );
         } else if (state is PesquisarLoaded) {
-          List<User> displayedUsers = state.users;
+          List<Employee> displayEmployees = state.employees;
 
           if (context.read<PesquisarCubit>().isSearching) {
-            displayedUsers = displayedUsers
-                .where((user) => user.name.toLowerCase().contains(
+            displayEmployees = displayEmployees
+                .where((employee) => employee.name.toLowerCase().contains(
                     context.read<PesquisarCubit>().searchQuery.toLowerCase()))
                 .toList();
           }
@@ -105,10 +105,10 @@ class Projects extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
                       child: ListView.builder(
-                        itemCount: displayedUsers.length,
+                        itemCount: displayEmployees.length,
                         itemBuilder: (context, index) {
-                          User user = displayedUsers[index];
-                          return _buildProjectListTile(context, user);
+                          Employee employee = displayEmployees[index];
+                          return _buildProjectListTile(context, employee);
                         },
                       ),
                     ),
@@ -124,102 +124,106 @@ class Projects extends StatelessWidget {
     );
   }
 
-  Widget _buildProjectListTile(BuildContext context, User user) {
+  Widget _buildProjectListTile(BuildContext context, Employee employee) {
     return Padding(
         padding: const EdgeInsets.only(bottom: 16.0),
         child: InkWell(
           onTap: () {
-            _openRightSideModal(context, user);
+            _openRightSideModal(context, employee);
           },
           child: Card(
-            color: DockColors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 16.0),
-                    child: Container(
-                      width: MediaQuery.of(context).size.width * 0.2,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(0.0),
-                      ),
-                      child: Image.asset(
-                        'assets/svg/skandi_iguacu.jpeg',
-                        height: 200,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
                   Expanded(
-                    child: Column(
+                    child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Text(
-                          'Skandi Salvador',
-                          style: DockTheme.h1.copyWith(
-                            color: DockColors.iron100,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 26,
-                          ),
-                        ),
-                        Text(
-                          'DOCAGEM',
-                          style: DockTheme.h2.copyWith(
-                            color: DockColors.slate110,
-                            fontWeight: FontWeight.w400,
-                            fontSize: 14,
-                          ),
-                        ),
                         Padding(
-                          padding: EdgeInsets.symmetric(vertical: 2.0),
-                          child: Divider(
-                            color: DockColors.slate100.withAlpha(100),
-                            thickness: 2,
+                          padding: const EdgeInsets.only(right: 16.0),
+                          child: Container(
+                            width: MediaQuery.of(context).size.width * 0.15,
+                            height: MediaQuery.of(context).size.width * 0.1,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(0.0),
+                            ),
+                            child: Image.asset(
+                              'assets/svg/skandi_iguacu.jpeg',
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
-                        Text(
-                          '18/04/24 - 30/05/24',
-                          style: DockTheme.h2.copyWith(
-                            color: DockColors.success100,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Skandi Salvador',
+                                style: DockTheme.h1.copyWith(
+                                  color: DockColors.iron100,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 26,
+                                ),
+                              ),
+                              Text(
+                                'DOCAGEM',
+                                style: DockTheme.h2.copyWith(
+                                  color: DockColors.slate110,
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 2.0, horizontal: 16.0),
+                                child: Divider(
+                                  color: DockColors.slate100.withAlpha(100),
+                                  thickness: 2,
+                                ),
+                              ),
+                              Text(
+                                '18/04/24 - 30/05/24',
+                                style: DockTheme.h2.copyWith(
+                                  color: DockColors.success100,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Text(
+                                '35 empresas convidadas',
+                                style: DockTheme.h2.copyWith(
+                                  color: DockColors.iron100,
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Text(
+                                '20 empresas participantes',
+                                style: DockTheme.h2.copyWith(
+                                  color: DockColors.iron100,
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 30,
+                              ),
+                            ],
                           ),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Text(
-                          '35 empresas convidadas',
-                          style: DockTheme.h2.copyWith(
-                            color: DockColors.iron100,
-                            fontWeight: FontWeight.normal,
-                            fontSize: 14,
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Text(
-                          '20 empresas participantes',
-                          style: DockTheme.h2.copyWith(
-                            color: DockColors.iron100,
-                            fontWeight: FontWeight.normal,
-                            fontSize: 14,
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 30,
                         ),
                       ],
                     ),
                   ),
                   const Padding(
-                    padding: EdgeInsets.all(32.0),
+                    padding: EdgeInsets.only(left: 16.0),
                     child: Icon(
                       Icons.arrow_forward_ios,
                       color: DockColors.iron100,
@@ -233,7 +237,7 @@ class Projects extends StatelessWidget {
         ));
   }
 
-  void _openRightSideModal(BuildContext context, User user) {
+  void _openRightSideModal(BuildContext context, Employee employee) {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
@@ -243,8 +247,8 @@ class Projects extends StatelessWidget {
             width: MediaQuery.of(context).size.width *
                 0.5, // 50% width of the screen
             child: Details(
-                user:
-                    user), // Assuming Details widget takes a user as a parameter
+                employee:
+                    employee), // Assuming Details widget takes a user as a parameter
           ),
         );
       },
