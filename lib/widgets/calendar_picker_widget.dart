@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:dockcheck_web/features/home/bloc/cadastrar_cubit.dart';
 import 'package:dockcheck_web/utils/colors.dart';
 import 'package:dockcheck_web/utils/theme.dart';
@@ -42,11 +40,6 @@ class CalendarPickerWidgetState extends State<CalendarPickerWidget> {
       type: FileType.custom,
       allowedExtensions: ['pdf'],
     );
-
-    //turn the result.files.first into a base64 string
-    if (result != null) {
-      final String base64String = base64Encode(result.files.first.bytes!);
-    }
 
     if (result != null) {
       final String fileName = result.files.first.name;
