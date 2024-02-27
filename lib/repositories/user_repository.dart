@@ -126,3 +126,86 @@ class UserRepository {
     return User.fromJson(data);
   }
 }
+
+/*
+import 'dart:async';
+
+import '../models/user.dart'; // Make sure to import the corresponding model
+import '../services/api_service.dart';
+import '../utils/simple_logger.dart';
+
+class UserRepository {
+  final ApiService apiService;
+
+  UserRepository(this.apiService);
+
+  Future<User> createUser(Map<String, dynamic> userData) async {
+    try {
+      final data = await apiService.post('users', userData);
+      return User.fromJson(data['user']);
+    } catch (e) {
+      SimpleLogger.severe('Failed to create user: ${e.toString()}');
+      return null; // Return null as a fallback
+    }
+  }
+
+  Future<User> getUserById(String userId) async {
+    try {
+      final data = await apiService.get('users/$userId');
+      return User.fromJson(data);
+    } catch (e) {
+      SimpleLogger.severe('Failed to get user: ${e.toString()}');
+      return null;
+    }
+  }
+
+  Future<User> updateUser(String userId, Map<String, dynamic> updateData) async {
+    try {
+      final data = await apiService.put('users/$userId', updateData);
+      return User.fromJson(data['user']);
+    } catch (e) {
+      SimpleLogger.severe('Failed to update user: ${e.toString()}');
+      return null;
+    }
+  }
+
+  Future<List<User>> getAllUsers() async {
+    try {
+      final data = await apiService.get('users');
+      return List<User>.from(data.map((x) => User.fromJson(x)));
+    } catch (e) {
+      SimpleLogger.severe('Failed to get all users: ${e.toString()}');
+      return [];
+    }
+  }
+
+  Future<List<User>> searchUsers(String searchTerm) async {
+    try {
+      final data = await apiService.get('users/search?searchTerm=$searchTerm');
+      return List<User>.from(data.map((x) => User.fromJson(x)));
+    } catch (e) {
+      SimpleLogger.severe('Failed to search users: ${e.toString()}');
+      return [];
+    }
+  }
+
+  Future<void> blockUser(String userId) async {
+    try {
+      await apiService.put('users/$userId/block');
+      SimpleLogger.info('User blocked successfully');
+    } catch (e) {
+      SimpleLogger.severe('Failed to block user: ${e.toString()}');
+    }
+  }
+
+  Future<void> unblockUser(String userId) async {
+    try {
+      await apiService.put('users/$userId/unblock');
+      SimpleLogger.info('User unblocked successfully');
+    } catch (e) {
+      SimpleLogger.severe('Failed to unblock user: ${e.toString()}');
+    }
+  }
+}
+
+ */
