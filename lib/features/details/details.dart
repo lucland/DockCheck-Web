@@ -1,19 +1,20 @@
 import 'package:dockcheck_web/features/details/bloc/details_cubit.dart';
+import 'package:dockcheck_web/models/employee.dart';
 import 'package:dockcheck_web/utils/colors.dart';
 import 'package:dockcheck_web/utils/strings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../models/user.dart';
+import '../../models/document.dart';
 import '../../utils/formatter.dart';
 import '../../utils/theme.dart';
 import '../../widgets/title_value_widget.dart';
 
 class Details extends StatelessWidget {
-  final User user;
+  final Employee employee;
 
   const Details({
     super.key,
-    required this.user,
+    required this.employee,
   });
 
   @override
@@ -21,7 +22,7 @@ class Details extends StatelessWidget {
     return Container(
       color: DockColors.white,
       child: DetailsView(
-        user: user,
+        employee: employee,
       ),
     );
   }
@@ -29,16 +30,16 @@ class Details extends StatelessWidget {
 
 class DetailsView extends StatelessWidget {
   final ScrollController _scrollController = ScrollController();
-  final User user;
+  final Employee employee;
 
   DetailsView({
     super.key,
-    required this.user,
+    required this.employee,
   });
 
   @override
   Widget build(BuildContext context) {
-    context.read<DetailsCubit>().getUser(user.id);
+    context.read<DetailsCubit>().getEmployeeAndDocuments(employee.id);
     return BlocBuilder<DetailsCubit, DetailsState>(
       builder: (context, state) {
         if (state is DetailsLoading) {
@@ -46,6 +47,8 @@ class DetailsView extends StatelessWidget {
         } else if (state is DetailsError) {
           return Center(child: Text('Error: ${state.message}'));
         } else if (state is DetailsLoaded) {
+          final documents = state.documents;
+
           return Scaffold(
             body: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,20 +69,20 @@ class DetailsView extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Expanded(
-                                  child: Text(user.name,
+                                  child: Text(employee.name,
                                       style: DockTheme.h1.copyWith(
                                           color: Colors.white,
                                           fontWeight: FontWeight.w600),
                                       overflow: TextOverflow.ellipsis),
                                 ),
-                                Text('|   N° ${user.number.toString()}',
+                                Text('|   N° ${employee.number.toString()}',
                                     style: DockTheme.h1
                                         .copyWith(color: Colors.white),
                                     overflow: TextOverflow.ellipsis),
                               ],
                             ),
                           ),
-                          user.isOnboarded
+                          employee.documentsOk
                               ? Container(
                                   padding: const EdgeInsets.symmetric(
                                       vertical: 8.0, horizontal: 16),
@@ -93,8 +96,7 @@ class DetailsView extends StatelessWidget {
                                         size: 16,
                                       ),
                                       const SizedBox(width: 8),
-                                      Text(
-                                          'Usuário com documentos em dia e atrelado a um projeto',
+                                      Text('Usuário com documentos em dia',
                                           style: DockTheme.h1.copyWith(
                                               color: DockColors.success120,
                                               fontWeight: FontWeight.w500,
@@ -106,7 +108,8 @@ class DetailsView extends StatelessWidget {
                               : Container(
                                   padding: const EdgeInsets.symmetric(
                                       vertical: 8.0, horizontal: 16),
-                                  color: Color.fromARGB(255, 240, 228, 228),
+                                  color:
+                                      const Color.fromARGB(255, 240, 228, 228),
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
@@ -133,29 +136,29 @@ class DetailsView extends StatelessWidget {
                               children: [
                                 TitleValueWidget(
                                   title: DockStrings.cpf,
-                                  value: user.cpf,
+                                  value: employee.cpf,
                                   color: DockColors.iron100,
                                 ),
                                 TitleValueWidget(
                                   title: DockStrings.blood,
-                                  value: user.bloodType, // tipo sanguineo
+                                  value: employee.bloodType, // tipo sanguineo
                                   color: DockColors.iron100,
                                 ),
                                 TitleValueWidget(
                                   title: DockStrings.funcao,
-                                  value: user.role,
+                                  value: employee.role,
                                   color: DockColors.iron100,
                                 ),
-                                if (user.email != '') ...[
+                                if (employee.email != '') ...[
                                   TitleValueWidget(
                                     title: DockStrings.email,
-                                    value: user.email,
+                                    value: employee.email,
                                     color: DockColors.iron100,
                                   ),
                                 ],
                                 TitleValueWidget(
                                   title: DockStrings.area,
-                                  value: user.area,
+                                  value: employee.area,
                                   color: DockColors.iron100,
                                 ),
                               ],
@@ -188,311 +191,47 @@ class DetailsView extends StatelessWidget {
                                         thickness: 0.3,
                                       ),
                                     ),
-                                    Row(
-                                      children: [
-                                        TitleValueWidget(
-                                          title: DockStrings.aso,
-                                          value: Formatter.formatDateTime(
-                                              user.aso),
-                                          color: Formatter.formatDateTime(
-                                                          user.aso)
-                                                      .compareTo(Formatter
-                                                          .formatDateTime(
-                                                              DateTime.now())) <
-                                                  0
-                                              ? DockColors.danger100
-                                              : DockColors.iron100,
-                                        ),
-                                        if (Formatter.formatDateTime(user.aso)
-                                                .compareTo(
-                                                    Formatter.formatDateTime(
-                                                        DateTime.now())) <
-                                            0)
-                                          Column(
-                                            children: [
-                                              SizedBox(
-                                                width: 4,
-                                                height: 16,
-                                              ),
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    left: 265.0),
-                                                child: Text(
-                                                  ' Aso expirado',
-                                                  style: TextStyle(
-                                                    color: DockColors.danger100,
-                                                    fontWeight: FontWeight.w800,
-                                                    fontSize: 17,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        TitleValueWidget(
-                                          title: DockStrings.nr34,
-                                          value: Formatter.formatDateTime(
-                                              user.nr34),
-                                          color: Formatter.formatDateTime(
-                                                          user.nr34)
-                                                      .compareTo(Formatter
-                                                          .formatDateTime(
-                                                              DateTime.now())) <
-                                                  0
-                                              ? DockColors.danger100
-                                              : DockColors.iron100,
-                                        ),
-                                        if (Formatter.formatDateTime(user.nr34)
-                                                .compareTo(
-                                                    Formatter.formatDateTime(
-                                                        DateTime.now())) <
-                                            0)
-                                          Column(
-                                            children: [
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    ' NR34 expirado',
-                                                    style: TextStyle(
-                                                      color:
-                                                          DockColors.danger100,
-                                                      fontSize: 17,
-                                                      fontWeight:
-                                                          FontWeight.w800,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        TitleValueWidget(
-                                          title: DockStrings.nr10,
-                                          value: Formatter.formatDateTime(
-                                              user.nr10),
-                                          color: Formatter.formatDateTime(
-                                                          user.nr10)
-                                                      .compareTo(Formatter
-                                                          .formatDateTime(
-                                                              DateTime.now())) <
-                                                  0
-                                              ? DockColors.danger100
-                                              : DockColors.iron100,
-                                        ),
-                                        if (Formatter.formatDateTime(user.nr10)
-                                                .compareTo(
-                                                    Formatter.formatDateTime(
-                                                        DateTime.now())) <
-                                            0)
-                                          Column(
-                                            children: [
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    ' NR10 expirado',
-                                                    style: TextStyle(
-                                                      color:
-                                                          DockColors.danger100,
-                                                      fontSize: 17,
-                                                      fontWeight:
-                                                          FontWeight.w800,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        TitleValueWidget(
-                                          title: DockStrings.nr33,
-                                          value: Formatter.formatDateTime(
-                                              user.nr33),
-                                          color: Formatter.formatDateTime(
-                                                          user.nr33)
-                                                      .compareTo(Formatter
-                                                          .formatDateTime(
-                                                              DateTime.now())) <
-                                                  0
-                                              ? DockColors.danger100
-                                              : DockColors.iron100,
-                                        ),
-                                        if (Formatter.formatDateTime(user.nr33)
-                                                .compareTo(
-                                                    Formatter.formatDateTime(
-                                                        DateTime.now())) <
-                                            0)
-                                          Column(
-                                            children: [
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    ' NR33 expirado',
-                                                    style: TextStyle(
-                                                      color:
-                                                          DockColors.danger100,
-                                                      fontSize: 17,
-                                                      fontWeight:
-                                                          FontWeight.w800,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        TitleValueWidget(
-                                          title: DockStrings.nr35,
-                                          value: Formatter.formatDateTime(
-                                              user.nr35),
-                                          color: Formatter.formatDateTime(
-                                                          user.nr35)
-                                                      .compareTo(Formatter
-                                                          .formatDateTime(
-                                                              DateTime.now())) <
-                                                  0
-                                              ? DockColors.danger100
-                                              : DockColors.iron100,
-                                        ),
-                                        if (Formatter.formatDateTime(user.nr35)
-                                                .compareTo(
-                                                    Formatter.formatDateTime(
-                                                        DateTime.now())) <
-                                            0)
-                                          Column(children: [
+                                    ListView.builder(
+                                      itemCount: documents.length,
+                                      itemBuilder: (context, index) {
+                                        Document document = documents[index];
+                                        return Column(
+                                          children: [
                                             Row(
                                               mainAxisAlignment:
-                                                  MainAxisAlignment.start,
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
                                               children: [
-                                                Text(
-                                                  ' NR35 expirado',
-                                                  style: TextStyle(
-                                                    color: DockColors.danger100,
-                                                    fontSize: 17,
-                                                    fontWeight: FontWeight.w800,
-                                                  ),
+                                                TitleValueWidget(
+                                                  title: document.type,
+                                                  value:
+                                                      Formatter.formatDateTime(
+                                                          document
+                                                              .expirationDate),
+                                                  color: document.expirationDate
+                                                          .isBefore(
+                                                              DateTime.now())
+                                                      ? DockColors.danger100
+                                                      : DockColors.iron100,
                                                 ),
+                                                if (document.expirationDate
+                                                    .isBefore(DateTime.now()))
+                                                  Text(
+                                                    ' ${document.type} expirado',
+                                                    style: const TextStyle(
+                                                      color:
+                                                          DockColors.danger100,
+                                                      fontSize: 17,
+                                                      fontWeight:
+                                                          FontWeight.w800,
+                                                    ),
+                                                  ),
                                               ],
                                             ),
-                                          ]),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 8),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Card(
-                              color: DockColors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          DockStrings.estadia,
-                                          style: DockTheme.h1.copyWith(
-                                            color: Colors.black,
-                                            fontSize: 16,
-                                          ),
-                                        ),
-                                        const Padding(
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 2.0),
-                                          child: Divider(
-                                            color: DockColors.iron100,
-                                            thickness: 0.3,
-                                          ),
-                                        ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                              DockStrings.de,
-                                              style: DockTheme.body.copyWith(
-                                                color: DockColors.iron100,
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 14,
-                                              ),
-                                            ),
-                                            Text(
-                                              Formatter.formatDateTime(
-                                                  user.startJob),
-                                              style: DockTheme.body.copyWith(
-                                                color: DockColors.iron100,
-                                                fontWeight: FontWeight.w700,
-                                                fontSize: 14,
-                                              ),
-                                            ),
+                                            const SizedBox(height: 8),
                                           ],
-                                        ),
-                                        const SizedBox(height: 12),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                              DockStrings.ate,
-                                              style: DockTheme.body.copyWith(
-                                                color: DockColors.iron100,
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 14,
-                                              ),
-                                            ),
-                                            Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.end,
-                                              children: [
-                                                Text(
-                                                  Formatter.formatDateTime(
-                                                      user.endJob),
-                                                  style:
-                                                      DockTheme.body.copyWith(
-                                                    color: Formatter.formatDateTime(
-                                                                    user.endJob)
-                                                                .compareTo(Formatter
-                                                                    .formatDateTime(
-                                                                        DateTime
-                                                                            .now())) <
-                                                            0
-                                                        ? DockColors.danger100
-                                                        : DockColors.iron100,
-                                                    fontWeight: FontWeight.w800,
-                                                    fontSize: 17,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 8),
-                                      ],
+                                        );
+                                      },
                                     ),
                                   ],
                                 ),
