@@ -11,7 +11,7 @@ class EventRepository {
 
   Future<Event> createEvent(Event event) async {
     try {
-      final data = await apiService.post('events/create', event.toJson());
+      final data = await apiService.post('events', event.toJson());
       return Event.fromJson(data);
     } catch (e) {
       SimpleLogger.severe('Failed to create event: ${e.toString()}');
