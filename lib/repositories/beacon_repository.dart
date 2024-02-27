@@ -1,47 +1,25 @@
-import '../models/beacon.dart';
+import 'dart:async';
+
+import '../models/beacon.dart'; // Make sure to import the corresponding model
 import '../services/api_service.dart';
-import '../services/local_storage_service.dart';
 import '../utils/simple_logger.dart';
 
 class BeaconRepository {
   final ApiService apiService;
-  final LocalStorageService localStorageService;
 
-  BeaconRepository(this.apiService, this.localStorageService);
+  BeaconRepository(this.apiService);
 
   Future<Beacon> createBeacon(Beacon beacon) async {
     try {
-      // Try posting to API
-      final data = await apiService.post('beacons/create', beacon.toJson());
-      SimpleLogger.info('Beacon created: $data');
+      final data = await apiService.post('beacons', beacon.toJson());
       return Beacon.fromJson(data);
     } catch (e) {
-      // Log and handle API failure
-      SimpleLogger.severe('Beacon creation failed: ${e.toString()}');
-      return beacon; // Return the local version
+      SimpleLogger.severe('Failed to create beacon: ${e.toString()}');
+      return beacon;
     }
   }
 
-  Future<Beacon> updateBeacon(String id, Beacon beacon) async {
-    try {
-      final data = await apiService.put('beacons/$id', beacon.toJson());
-      SimpleLogger.info('Beacon updated: $data');
-      return Beacon.fromJson(data);
-    } catch (e) {
-      SimpleLogger.severe(
-          'Failed to update beacon via API, updating local storage: ${e.toString()}');
-      // Mark the beacon as pending update in local storage
-      beacon.status = 'pending_update'; // Assuming 'status' field exists
-      return beacon; // Return the local version
-    }
-  }
-
-  Future<void> deleteBeacon(String id) async {
-    SimpleLogger.info('Beacon deleted: $id');
-    await apiService.delete('beacons/$id');
-  }
-
-  Future<Beacon> getBeacon(String id) async {
+  FutureOr<Beacon> getBeaconById(String id) async {
     final data = await apiService.get('beacons/$id');
     return Beacon.fromJson(data);
   }
@@ -51,10 +29,60 @@ class BeaconRepository {
       final data = await apiService.get('beacons');
       return (data as List).map((item) => Beacon.fromJson(item)).toList();
     } catch (e) {
-      SimpleLogger.severe('Failed to get all beacons: ${e.toString()}');
-      // Fetch from local storage as fallback
-      // Implement logic to return data from local storage or an empty list
+      SimpleLogger.severe('Failed to get beacons: ${e.toString()}');
       return []; // Return an empty list as a fallback
+    }
+  }
+
+  Future<Beacon> updateBeacon(String id, Beacon beacon) async {
+    try {
+      final data = await apiService.put('beacons/$id', beacon.toJson());
+      return Beacon.fromJson(data);
+    } catch (e) {
+      SimpleLogger.severe('Failed to update beacon: ${e.toString()}');
+      return beacon;
+    }
+  }
+
+  Future<void> deleteBeacon(String id) async {
+    await apiService.delete('beacons/$id');
+  }
+
+  Future<void> attachBeacon(String beaconId, String employeeId) async {
+    try {
+      final beacon = await getBeaconById(beaconId);
+      await updateBeacon(
+          beaconId,
+          Beacon(
+            id: beacon.id,
+            itag: beacon.itag,
+            isValid: true,
+            employeeId: employeeId,
+            status: beacon.status,
+          ));
+      SimpleLogger.info('Beacon attached to employee successfully');
+    } catch (e) {
+      SimpleLogger.severe(
+          'Error attaching beacon to employee: ${e.toString()}');
+    }
+  }
+
+  Future<void> detachBeacon(String beaconId) async {
+    try {
+      final beacon = await getBeaconById(beaconId);
+      await updateBeacon(
+          beaconId,
+          Beacon(
+            id: beacon.id,
+            itag: beacon.itag,
+            isValid: false,
+            employeeId: '',
+            status: beacon.status,
+          ));
+      SimpleLogger.info('Beacon detached from employee successfully');
+    } catch (e) {
+      SimpleLogger.severe(
+          'Error detaching beacon from employee: ${e.toString()}');
     }
   }
 }
