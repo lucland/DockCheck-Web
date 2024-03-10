@@ -1,5 +1,6 @@
 import 'package:dockcheck_web/features/home/bloc/pesquisar_cubit.dart';
 import 'package:dockcheck_web/features/home/home.dart';
+import 'package:dockcheck_web/models/project.dart';
 import 'package:dockcheck_web/utils/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'features/details/bloc/details_cubit.dart';
 import 'features/home/bloc/cadastrar_cubit.dart';
 import 'features/login/bloc/login_cubit.dart';
+import 'features/projects/bloc/project_cubit.dart';
 import 'repositories/area_repository.dart';
 import 'repositories/authorization_repository.dart';
 import 'repositories/beacon_repository.dart';
@@ -18,6 +20,7 @@ import 'repositories/event_repository.dart';
 import 'repositories/invite_repository.dart';
 import 'repositories/login_repository.dart';
 import 'repositories/picture_repository.dart';
+import 'repositories/project_repository.dart';
 import 'repositories/third_company_repository.dart';
 import 'repositories/third_project_repository.dart';
 import 'repositories/user_repository.dart';
@@ -44,14 +47,16 @@ void main() {
   var pictureRepository = PictureRepository(apiService);
   var thirdCompanyRepository = ThirdCompanyRepository(apiService);
   var thirdProjectRepository = ThirdProjectRepository(apiService);
+  var projectRepository = ProjectRepository(apiService);
 
   var loginCubit =
       LoginCubit(loginRepository, userRepository, localStorageService);
-  var pesquisarCUbit = PesquisarCubit(employeeRepository);
+  var pesquisarCUbit = PesquisarCubit(employeeRepository, projectRepository);
   var cadastrarCubit = CadastrarCubit(employeeRepository, localStorageService,
       eventRepository, pictureRepository, documentRepository);
   var detailsCubit =
       DetailsCubit(employeeRepository, documentRepository, localStorageService);
+  var projectCubit = ProjectCubit(projectRepository);
 
   runApp(
     MultiBlocProvider(
@@ -71,12 +76,14 @@ void main() {
         Provider<DocumentRepository>(create: (_) => documentRepository),
         Provider<EmployeeRepository>(create: (_) => employeeRepository),
         Provider<InviteRepository>(create: (_) => inviteRepository),
+        Provider<ProjectRepository>(create: (_) => projectRepository),
         Provider<PictureRepository>(create: (_) => pictureRepository),
         Provider<ThirdCompanyRepository>(create: (_) => thirdCompanyRepository),
         Provider<ThirdProjectRepository>(create: (_) => thirdProjectRepository),
         BlocProvider<PesquisarCubit>(create: (_) => pesquisarCUbit),
         BlocProvider<CadastrarCubit>(create: (_) => cadastrarCubit),
         BlocProvider<DetailsCubit>(create: (_) => detailsCubit),
+        BlocProvider<ProjectCubit>(create: (_) => projectCubit),
       ],
       child: const MyApp(),
     ),
