@@ -30,6 +30,8 @@ class ProjectRepository {
   }
 
   Future<List<Project>> getAllProjects() async {
+    SimpleLogger.info('Getting all projects');
+    print("Getting all projects");
     try {
       final data = await apiService.get('projects');
       return List<Project>.from(data.map((x) => Project.fromJson(x)));
