@@ -181,7 +181,6 @@ class CadastrarModal extends StatelessWidget {
                         title: DockStrings.aso,
                         isRequired: true,
                         controller: TextEditingController(),
-                        cubit: context.read<CadastrarCubit>(),
                         onChanged: (time) {},
                       ),
                       CalendarPickerWidget(
@@ -189,7 +188,6 @@ class CadastrarModal extends StatelessWidget {
                         title: DockStrings.nr34,
                         isRequired: true,
                         controller: TextEditingController(),
-                        cubit: context.read<CadastrarCubit>(),
                         onChanged: (time) {},
                       ),
                       ...state.nrTypes.map(
@@ -200,7 +198,6 @@ class CadastrarModal extends StatelessWidget {
                           controller: TextEditingController(),
                           onChanged: (time) {},
                           showRemoveButton: true,
-                          cubit: context.read<CadastrarCubit>(),
                           onRemove: () => context
                               .read<CadastrarCubit>()
                               .removeNrType(nrType),
@@ -303,8 +300,8 @@ class CadastrarModal extends StatelessWidget {
             ),
             TextButton(
               onPressed: () {
+                context.read<CadastrarCubit>().createEvent();
                 Navigator.of(context).pop();
-                context.read<CadastrarCubit>().resetState();
               },
               child: const Text('Adicionar'),
             ),
