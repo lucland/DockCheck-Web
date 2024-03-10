@@ -53,6 +53,8 @@ class CadastrarCubit extends Cubit<CadastrarState> {
               documentsOk: false,
               blockReason: '-',
               status: '-',
+              createdAt: DateTime.now(),
+              updatedAt: DateTime.now(),
             ),
             event: Event(
               id: const Uuid().v4(),
@@ -193,6 +195,8 @@ class CadastrarCubit extends Cubit<CadastrarState> {
           documentsOk: false,
           blockReason: '-',
           status: '-',
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
         ),
         event: Event(
           id: const Uuid().v4(),
@@ -222,6 +226,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
   }
 
   void createEvent() async {
+    SimpleLogger.info('Creating event');
     final event = state.event.copyWith(
       employeeId: state.employee.id,
       timestamp: DateTime.now(),
@@ -236,6 +241,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
     }
     try {
       await eventRepository.createEvent(event);
+      SimpleLogger.info('Event created');
       if (!isClosed) {
         createPicture();
       }
@@ -254,6 +260,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
     if (!isClosed) {
       try {
         await pictureRepository.createEmployeePicture(state.picture);
+        SimpleLogger.info('Picture created');
         if (!isClosed) {
           createDocuments();
         }
@@ -274,6 +281,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
       for (var document in state.documents) {
         try {
           await documentRepository.createDocument(document);
+          SimpleLogger.info('Document created');
         } catch (e) {
           SimpleLogger.warning('Error cadastrar_cubit createDocuments: $e');
           if (!isClosed) {
@@ -297,6 +305,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
       emit(state.copyWith(employee: employee));
       try {
         await employeeRepository.createEmployee(state.employee);
+        SimpleLogger.info('Employee created');
         emit(state.copyWith(employeeCreated: true));
       } catch (e) {
         SimpleLogger.warning('Error cadastrar_cubit createEmployee: $e');
