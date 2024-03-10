@@ -16,6 +16,8 @@ class Employee {
   bool documentsOk;
   String blockReason;
   String status;
+  DateTime createdAt;
+  DateTime updatedAt;
 
   Employee({
     required this.id,
@@ -35,27 +37,42 @@ class Employee {
     required this.documentsOk,
     required this.blockReason,
     required this.status,
+    required this.createdAt,
+    required this.updatedAt,
   });
 
   factory Employee.fromJson(Map<String, dynamic> json) {
     return Employee(
-      id: json['id'],
-      authorizationsId: List<String>.from(json['authorizations_id']),
-      name: json['name'],
-      thirdCompanyId: json['third_company_id'],
-      visitorCompany: json['visitor_company'],
-      role: json['role'],
-      number: json['number'],
-      bloodType: json['blood_type'],
-      cpf: json['cpf'],
-      email: json['email'],
-      area: json['area'],
-      lastAreaFound: json['last_area_found'],
-      lastTimeFound: DateTime.parse(json['last_time_found']),
-      isBlocked: json['is_blocked'],
-      documentsOk: json['documents_ok'],
-      blockReason: json['block_reason'],
-      status: json['status'],
+      id: json['id']
+          .toString(), // Assuming 'id' can be non-null but making sure it's a string.
+      authorizationsId: json['authorizations_id'] != null
+          ? List<String>.from(json['authorizations_id'])
+          : [],
+      name: json['name'] ?? '', // Provides an empty string if null.
+      thirdCompanyId: json['third_company_id'] ?? '',
+      visitorCompany: json['visitor_company'] ?? '',
+      role: json['role'] ?? '',
+      number: json['number'] ??
+          0, // Assuming 'number' is an int, provide a default value if null.
+      bloodType: json['blood_type'] ?? '',
+      cpf: json['cpf'] ?? '',
+      email: json['email'] ?? '',
+      area: json['area'] ?? '',
+      lastAreaFound: json['last_area_found'] ?? '',
+      lastTimeFound: json['last_time_found'] != null
+          ? DateTime.parse(json['last_time_found'])
+          : DateTime.now(), // Handle DateTime parsing with a fallback.
+      isBlocked: json['is_blocked'] ??
+          false, // Assuming 'is_blocked' is a boolean, provide a default value if null.
+      documentsOk: json['documents_ok'] ?? false,
+      blockReason: json['block_reason'] ?? '',
+      status: json['status'] ?? '',
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'])
+          : DateTime.now(),
+      updatedAt: json['updated_at'] != null
+          ? DateTime.parse(json['updated_at'])
+          : DateTime.now(),
     );
   }
 
@@ -78,6 +95,8 @@ class Employee {
       'documents_ok': documentsOk,
       'block_reason': blockReason,
       'status': status,
+      'created_at': createdAt.toIso8601String(),
+      'updated_at': updatedAt.toIso8601String(),
     };
   }
 
@@ -99,6 +118,8 @@ class Employee {
     bool? documentsOk,
     String? blockReason,
     String? status,
+    DateTime? createdAt,
+    DateTime? updatedAt,
   }) {
     return Employee(
       id: id ?? this.id,
@@ -118,6 +139,8 @@ class Employee {
       documentsOk: documentsOk ?? this.documentsOk,
       blockReason: blockReason ?? this.blockReason,
       status: status ?? this.status,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
     );
   }
 }
