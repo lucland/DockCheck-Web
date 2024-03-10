@@ -8,6 +8,7 @@ class Project {
   List<String> thirdCompaniesId;
   List<String> adminsId;
   List<String> areasId;
+  String address;
   bool isDocking;
   String status;
 
@@ -21,6 +22,7 @@ class Project {
     required this.thirdCompaniesId,
     required this.adminsId,
     required this.areasId,
+    required this.address,
     required this.isDocking,
     required this.status,
   });
@@ -36,6 +38,7 @@ class Project {
       thirdCompaniesId: List<String>.from(json['third_companies_id']),
       adminsId: List<String>.from(json['admins_id']),
       areasId: List<String>.from(json['areas_id']),
+      address: json['address'],
       isDocking: json['is_docking'],
       status: json['status'],
     );
@@ -52,6 +55,7 @@ class Project {
       'third_companies_id': thirdCompaniesId,
       'admins_id': adminsId,
       'areas_id': areasId,
+      'address': address,
       'is_docking': isDocking,
       'status': status,
     };
@@ -67,6 +71,7 @@ class Project {
     List<String>? thirdCompaniesId,
     List<String>? adminsId,
     List<String>? areasId,
+    String? address,
     bool? isDocking,
     String? status,
   }) {
@@ -80,6 +85,7 @@ class Project {
       thirdCompaniesId: thirdCompaniesId ?? this.thirdCompaniesId,
       adminsId: adminsId ?? this.adminsId,
       areasId: areasId ?? this.areasId,
+      address: address ?? this.address,
       isDocking: isDocking ?? this.isDocking,
       status: status ?? this.status,
     );
