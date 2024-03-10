@@ -14,7 +14,6 @@ class CalendarPickerWidget extends StatefulWidget {
   final bool showAttachmentIcon;
   final bool showRemoveButton;
   final void Function()? onRemove;
-  final CadastrarCubit cubit;
 
   const CalendarPickerWidget(
       {Key? key,
@@ -24,7 +23,6 @@ class CalendarPickerWidget extends StatefulWidget {
       required this.onChanged,
       this.showAttachmentIcon = true,
       this.showRemoveButton = false,
-      required this.cubit,
       this.onRemove})
       : super(key: key);
 
