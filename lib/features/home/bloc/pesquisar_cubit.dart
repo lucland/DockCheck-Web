@@ -1,5 +1,7 @@
 import 'package:dockcheck_web/models/employee.dart';
+import 'package:dockcheck_web/models/project.dart';
 import 'package:dockcheck_web/repositories/employee_repository.dart';
+import 'package:dockcheck_web/repositories/project_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../utils/simple_logger.dart';
@@ -7,7 +9,9 @@ import 'pesquisar_state.dart';
 
 class PesquisarCubit extends Cubit<PesquisarState> {
   final EmployeeRepository employeeRepository;
+  final ProjectRepository projectRepository;
   List<Employee> allEmployee = [];
+  List<Project> allProjects = [];
   List<Employee> filteredEmployee = [];
   bool isSearching = false;
   String searchQuery = '';
@@ -15,26 +19,48 @@ class PesquisarCubit extends Cubit<PesquisarState> {
   @override
   bool isClosed = false;
 
-  PesquisarCubit(this.employeeRepository) : super(PesquisarInitial());
+  PesquisarCubit(this.employeeRepository, this.projectRepository)
+      : super(PesquisarInitial());
 
   Future<void> fetchEmployees() async {
+    print("fetchEmployees");
+    SimpleLogger.info('Fetching employees');
     try {
       if (!isClosed) {
         emit(PesquisarLoading());
       }
 
-      allEmployee = await employeeRepository.getAllEmployees();
+      allProjects = await projectRepository.getAllProjects();
 
-      if (allEmployee.isNotEmpty) {
-        //order by name
-        allEmployee.sort((a, b) => a.name.compareTo(b.name));
+      allEmployee = await employeeRepository.getAllEmployees();
+      print(allEmployee.length);
+
+      if (!isClosed) {
+        emit(PesquisarLoaded(allEmployee, allProjects));
       }
+    } catch (e) {
+      SimpleLogger.warning('Error during data synchronization: $e');
+      if (!isClosed) {
+        emit(PesquisarError("Failed to fetch users1. $e"));
+      }
+    }
+  }
+
+  //fetchProjects
+  Future<void> fetchProjects() async {
+    SimpleLogger.info('Fetching projects');
+    try {
+      if (!isClosed) {
+        emit(PesquisarLoading());
+      }
+
+      allProjects = await projectRepository.getAllProjects();
 
       if (!isClosed) {
         if (isSearching) {
           _applySearchFilter();
         } else {
-          emit(PesquisarLoaded(allEmployee));
+          emit(PesquisarLoaded(allEmployee, allProjects));
         }
       }
     } catch (e) {
@@ -65,7 +91,7 @@ class PesquisarCubit extends Cubit<PesquisarState> {
           .toList();
 
       if (!isClosed) {
-        emit(PesquisarLoaded(filteredEmployee));
+        emit(PesquisarLoaded(filteredEmployee, allProjects));
       }
     } catch (e) {
       SimpleLogger.warning('Error during data synchronization: $e');
@@ -81,7 +107,7 @@ class PesquisarCubit extends Cubit<PesquisarState> {
             employee.name.toLowerCase().contains(searchQuery.toLowerCase()))
         .toList();
 
-    emit(PesquisarLoaded(filteredEmployee));
+    emit(PesquisarLoaded(filteredEmployee, allProjects));
   }
 
   @override
