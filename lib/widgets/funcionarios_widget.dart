@@ -39,7 +39,7 @@ class FuncionariosWidget extends StatelessWidget {
           );
         } else if (state is PesquisarLoaded) {
           List<Employee> displayEmployees = state.employees;
-
+          print(displayEmployees.length + 1);
           if (context.read<PesquisarCubit>().isSearching) {
             displayEmployees = displayEmployees
                 .where((employee) => employee.name.toLowerCase().contains(
