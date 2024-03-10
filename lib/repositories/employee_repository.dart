@@ -37,9 +37,18 @@ class EmployeeRepository {
   Future<List<Employee>> getAllEmployees() async {
     try {
       final data = await apiService.get('employees');
-      return (data as List).map((item) => Employee.fromJson(item)).toList();
+      if (data != null) {
+        print("Data fetched: $data");
+        var list =
+            (data as List).map((item) => Employee.fromJson(item)).toList();
+        print("First employee name: ${list.first.name}"); // More detailed log
+        return list;
+      } else {
+        print("Data fetched is null");
+        return [];
+      }
     } catch (e) {
-      SimpleLogger.severe('Failed to get employees: ${e.toString()}');
+      print('Failed to get employees: ${e.toString()}');
       return []; // Return an empty list as a fallback
     }
   }
