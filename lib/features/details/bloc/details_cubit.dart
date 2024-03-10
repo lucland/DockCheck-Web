@@ -22,15 +22,15 @@ class DetailsCubit extends Cubit<DetailsState> {
     try {
       emit(DetailsLoading());
       final employee = await employeeRepository.getEmployeeById(employeeId);
-      final documentIds =
+      /*final documentIds =
           await documentsRepository.getDocumentIdsByEmployeeId(employeeId);
       final documents = await Future.wait<Document>(
           documentIds.map((id) => documentsRepository.getDocumentById(id)));
       List<Document> filteredDocuments = documents
           .where((document) => document.type.isNotEmpty)
           .toList()
-          .cast<Document>();
-      emit(DetailsLoaded(employee, filteredDocuments));
+          .cast<Document>();*/
+      emit(DetailsLoaded(employee, []));
     } catch (e) {
       SimpleLogger.warning('Error fetching user or documents: $e');
       emit(DetailsError('Failed to fetch user or documents: $e'));
