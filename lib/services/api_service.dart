@@ -9,8 +9,8 @@ class ApiService {
   //Local:
   //final String baseUrl = 'http://localhost:3000/api/v1';
   //Device:
-  final String baseUrl = 'http://172.20.253.81:3000/api/v1';
-  final String baseUrlServer = 'http://168.121.76.54:3000/api/v1';
+  //final String baseUrl = 'http://172.20.253.81:3000/api/v1';
+  final String baseUrl = 'http://168.121.76.54:3000/api/v1';
 
   final LocalStorageService localStorageService;
 
@@ -97,6 +97,7 @@ class ApiService {
 
   Future<Map<String, String>> _getHeaders() async {
     String? token = await localStorageService.getToken();
+    SimpleLogger.info('Token: $token');
 
     return token != null
         ? {
