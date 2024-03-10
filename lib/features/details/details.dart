@@ -54,193 +54,178 @@ class DetailsView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Expanded(
-                    child: SingleChildScrollView(
-                      controller: _scrollController,
-                      physics: const BouncingScrollPhysics(),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 8.0, horizontal: 16),
-                            color: DockColors.iron100,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: Text(employee.name,
-                                      style: DockTheme.h1.copyWith(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w600),
-                                      overflow: TextOverflow.ellipsis),
-                                ),
-                                Text('|   N° ${employee.number.toString()}',
-                                    style: DockTheme.h1
-                                        .copyWith(color: Colors.white),
-                                    overflow: TextOverflow.ellipsis),
-                              ],
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 32.0, horizontal: 16),
+                        color: DockColors.iron100,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Text(employee.name,
+                                  style: DockTheme.h1.copyWith(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600),
+                                  overflow: TextOverflow.ellipsis),
                             ),
+                            Text('|   N° ${employee.number.toString()}',
+                                style:
+                                    DockTheme.h1.copyWith(color: Colors.white),
+                                overflow: TextOverflow.ellipsis),
+                          ],
+                        ),
+                      ),
+                      employee.documentsOk
+                          ? Container(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 8.0, horizontal: 16),
+                              color: DockColors.success20,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.check_circle_rounded,
+                                    color: DockColors.success120,
+                                    size: 16,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text('Usuário com documentos em dia',
+                                      style: DockTheme.h1.copyWith(
+                                          color: DockColors.success120,
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 16),
+                                      overflow: TextOverflow.ellipsis),
+                                ],
+                              ),
+                            )
+                          : Container(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 8.0, horizontal: 16),
+                              color: const Color.fromARGB(255, 240, 228, 228),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.cancel,
+                                    color: DockColors.danger110,
+                                    size: 16,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text('Usuário bloqueado por pendências',
+                                      style: DockTheme.h1.copyWith(
+                                          color: DockColors.danger110,
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 16),
+                                      overflow: TextOverflow.ellipsis),
+                                ],
+                              ),
+                            ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 8.0, horizontal: 8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TitleValueWidget(
+                              title: DockStrings.cpf,
+                              value: employee.cpf,
+                              color: DockColors.iron100,
+                            ),
+                            TitleValueWidget(
+                              title: DockStrings.blood,
+                              value: employee.bloodType, // tipo sanguineo
+                              color: DockColors.iron100,
+                            ),
+                            TitleValueWidget(
+                              title: DockStrings.funcao,
+                              value: employee.role,
+                              color: DockColors.iron100,
+                            ),
+                            if (employee.email != '') ...[
+                              TitleValueWidget(
+                                title: DockStrings.email,
+                                value: employee.email,
+                                color: DockColors.iron100,
+                              ),
+                            ],
+                            TitleValueWidget(
+                              title: DockStrings.area,
+                              value: employee.area,
+                              color: DockColors.iron100,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Card(
+                          color: DockColors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                          employee.documentsOk
-                              ? Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 8.0, horizontal: 16),
-                                  color: DockColors.success20,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      const Icon(
-                                        Icons.check_circle_rounded,
-                                        color: DockColors.success120,
-                                        size: 16,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Text('Usuário com documentos em dia',
-                                          style: DockTheme.h1.copyWith(
-                                              color: DockColors.success120,
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 16),
-                                          overflow: TextOverflow.ellipsis),
-                                    ],
-                                  ),
-                                )
-                              : Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 8.0, horizontal: 16),
-                                  color:
-                                      const Color.fromARGB(255, 240, 228, 228),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      const Icon(
-                                        Icons.cancel,
-                                        color: DockColors.danger110,
-                                        size: 16,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Text('Usuário bloqueado por pendências',
-                                          style: DockTheme.h1.copyWith(
-                                              color: DockColors.danger110,
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 16),
-                                          overflow: TextOverflow.ellipsis),
-                                    ],
-                                  ),
-                                ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 8.0, horizontal: 8),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                TitleValueWidget(
-                                  title: DockStrings.cpf,
-                                  value: employee.cpf,
-                                  color: DockColors.iron100,
-                                ),
-                                TitleValueWidget(
-                                  title: DockStrings.blood,
-                                  value: employee.bloodType, // tipo sanguineo
-                                  color: DockColors.iron100,
-                                ),
-                                TitleValueWidget(
-                                  title: DockStrings.funcao,
-                                  value: employee.role,
-                                  color: DockColors.iron100,
-                                ),
-                                if (employee.email != '') ...[
-                                  TitleValueWidget(
-                                    title: DockStrings.email,
-                                    value: employee.email,
-                                    color: DockColors.iron100,
+                                Text(
+                                  DockStrings.validades,
+                                  style: DockTheme.h1.copyWith(
+                                    color: Colors.black,
+                                    fontSize: 16,
                                   ),
-                                ],
-                                TitleValueWidget(
-                                  title: DockStrings.area,
-                                  value: employee.area,
-                                  color: DockColors.iron100,
+                                ),
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 2.0),
+                                  child: Divider(
+                                    color: DockColors.slate100,
+                                    thickness: 0.3,
+                                  ),
+                                ),
+                                // Use Flexible to allow the ListView to fit within the remaining space
+                                Flexible(
+                                  child: ListView.builder(
+                                    // Setting neverScrollableScrollPhysics to prevent scrolling within the ListView itself
+                                    // This is important since the ListView is inside a SingleChildScrollView
+                                    physics: NeverScrollableScrollPhysics(),
+                                    shrinkWrap:
+                                        true, // Important to constrain the ListView's height
+                                    itemCount: documents.length,
+                                    itemBuilder: (context, index) {
+                                      Document document = documents[index];
+                                      return Column(
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              if (document.expirationDate
+                                                  .isBefore(DateTime.now()))
+                                                Text(
+                                                  ' ${document.type} expirado',
+                                                  style: const TextStyle(
+                                                    color: DockColors.danger100,
+                                                    fontSize: 17,
+                                                    fontWeight: FontWeight.w800,
+                                                  ),
+                                                ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 8),
+                                        ],
+                                      );
+                                    },
+                                  ),
                                 ),
                               ],
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Card(
-                              color: DockColors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      DockStrings.validades,
-                                      style: DockTheme.h1.copyWith(
-                                        color: Colors.black,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                    const Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(vertical: 2.0),
-                                      child: Divider(
-                                        color: DockColors.slate100,
-                                        thickness: 0.3,
-                                      ),
-                                    ),
-                                    ListView.builder(
-                                      itemCount: documents.length,
-                                      itemBuilder: (context, index) {
-                                        Document document = documents[index];
-                                        return Column(
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                TitleValueWidget(
-                                                  title: document.type,
-                                                  value:
-                                                      Formatter.formatDateTime(
-                                                          document
-                                                              .expirationDate),
-                                                  color: document.expirationDate
-                                                          .isBefore(
-                                                              DateTime.now())
-                                                      ? DockColors.danger100
-                                                      : DockColors.iron100,
-                                                ),
-                                                if (document.expirationDate
-                                                    .isBefore(DateTime.now()))
-                                                  Text(
-                                                    ' ${document.type} expirado',
-                                                    style: const TextStyle(
-                                                      color:
-                                                          DockColors.danger100,
-                                                      fontSize: 17,
-                                                      fontWeight:
-                                                          FontWeight.w800,
-                                                    ),
-                                                  ),
-                                              ],
-                                            ),
-                                            const SizedBox(height: 8),
-                                          ],
-                                        );
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
+                    ],
                   ),
                   Row(
                     children: [
