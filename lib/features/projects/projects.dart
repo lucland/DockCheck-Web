@@ -1,5 +1,6 @@
 import 'package:dockcheck_web/features/home/bloc/pesquisar_cubit.dart';
 import 'package:dockcheck_web/models/employee.dart';
+import 'package:dockcheck_web/widgets/project_modal_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -105,10 +106,10 @@ class Projects extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
                       child: ListView.builder(
-                        itemCount: displayEmployees.length,
+                        itemCount: 1,
                         itemBuilder: (context, index) {
-                          Employee employee = displayEmployees[index];
-                          return _buildProjectListTile(context, employee);
+                          //Employee employee = displayEmployees[index];
+                          return _buildProjectListTile(context);
                         },
                       ),
                     ),
@@ -124,12 +125,12 @@ class Projects extends StatelessWidget {
     );
   }
 
-  Widget _buildProjectListTile(BuildContext context, Employee employee) {
+  Widget _buildProjectListTile(BuildContext context) {
     return Padding(
         padding: const EdgeInsets.only(bottom: 16.0),
         child: InkWell(
           onTap: () {
-            _openRightSideModal(context, employee);
+            // _openRightSideModal(context, employee);
           },
           child: Card(
             child: Padding(
@@ -262,9 +263,7 @@ class Projects extends StatelessWidget {
       context: context,
       barrierDismissible: false,
       builder: (context) {
-        return CadastrarModal(
-          s: s,
-        );
+        return ProjectModal();
       },
     );
   }
