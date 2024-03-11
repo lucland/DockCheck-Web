@@ -1,5 +1,6 @@
 import 'package:dockcheck_web/features/home/bloc/pesquisar_cubit.dart';
 import 'package:dockcheck_web/features/home/home.dart';
+import 'package:dockcheck_web/features/invite/bloc/invite_cubit.dart';
 import 'package:dockcheck_web/models/project.dart';
 import 'package:dockcheck_web/utils/theme.dart';
 import 'package:flutter/material.dart';
@@ -58,6 +59,7 @@ void main() {
   var detailsCubit =
       DetailsCubit(employeeRepository, documentRepository, localStorageService);
   var projectCubit = ProjectCubit(projectRepository, localStorageService);
+  var inviteCubit = InviteCubit(inviteRepository);
 
   runApp(
     MultiBlocProvider(
@@ -85,6 +87,7 @@ void main() {
         BlocProvider<CadastrarCubit>(create: (_) => cadastrarCubit),
         BlocProvider<DetailsCubit>(create: (_) => detailsCubit),
         BlocProvider<ProjectCubit>(create: (_) => projectCubit),
+        BlocProvider<InviteCubit>(create: (_) => inviteCubit),
       ],
       child: MyApp(),
     ),
@@ -106,8 +109,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: DockTheme.theme,
-      //home: isLoggedIn() ? const Home() : Login(),
-      home: Login(),
+      home: isLoggedIn() ? const Home() : Login(),
+      // home: Login(),
       //if the
       //home: const Home(),
     );
