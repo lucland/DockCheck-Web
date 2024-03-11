@@ -1,4 +1,5 @@
 import 'package:dockcheck_web/features/home/bloc/pesquisar_cubit.dart';
+import 'package:dockcheck_web/features/invite/invite.dart';
 import 'package:dockcheck_web/models/employee.dart';
 import 'package:dockcheck_web/widgets/project_modal_widget.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +7,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../utils/colors.dart';
 import '../../utils/theme.dart';
-import '../../widgets/cadastrar_modal_widget.dart';
 import '../details/details.dart';
 import '../home/bloc/pesquisar_state.dart';
 
@@ -102,18 +102,8 @@ class Projects extends StatelessWidget {
                       ),
                     ],
                   ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: ListView.builder(
-                        itemCount: 1,
-                        itemBuilder: (context, index) {
-                          //Employee employee = displayEmployees[index];
-                          return _buildProjectListTile(context);
-                        },
-                      ),
-                    ),
-                  ),
+                  SingleChildScrollView(
+                      child: SizedBox(height: 500, child: InviteWidget())),
                 ],
               ),
             ),
