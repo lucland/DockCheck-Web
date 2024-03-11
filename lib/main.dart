@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'features/details/bloc/details_cubit.dart';
 import 'features/home/bloc/cadastrar_cubit.dart';
 import 'features/login/bloc/login_cubit.dart';
+import 'features/login/login.dart';
 import 'features/projects/bloc/project_cubit.dart';
 import 'repositories/area_repository.dart';
 import 'repositories/authorization_repository.dart';
@@ -56,7 +57,7 @@ void main() {
       eventRepository, pictureRepository, documentRepository);
   var detailsCubit =
       DetailsCubit(employeeRepository, documentRepository, localStorageService);
-  var projectCubit = ProjectCubit(projectRepository);
+  var projectCubit = ProjectCubit(projectRepository, localStorageService);
 
   runApp(
     MultiBlocProvider(
@@ -85,21 +86,30 @@ void main() {
         BlocProvider<DetailsCubit>(create: (_) => detailsCubit),
         BlocProvider<ProjectCubit>(create: (_) => projectCubit),
       ],
-      child: const MyApp(),
+      child: MyApp(),
     ),
   );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  MyApp({super.key});
+
+  //check if the user is logged in, if not, show the login page by checking if local storage has a token and a user id saved
+  LocalStorageService localStorageService = LocalStorageService();
+  bool isLoggedIn() {
+    return localStorageService.getToken() != "" &&
+        localStorageService.getUserId() != "";
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: DockTheme.theme,
-      //home: Login(),
-      home: const Home(),
+      //home: isLoggedIn() ? const Home() : Login(),
+      home: Login(),
+      //if the
+      //home: const Home(),
     );
   }
 }
