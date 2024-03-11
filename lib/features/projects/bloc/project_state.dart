@@ -1,4 +1,4 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:dockcheck_web/models/document.dart';
 
 class ProjectState {
   final String name;
@@ -15,6 +15,8 @@ class ProjectState {
   final bool isLoading;
   final bool projectCreated;
   final String errorMessage;
+  final List<String> fileNames;
+  final List<Document> documents;
 
   ProjectState({
     this.name = '',
@@ -31,6 +33,8 @@ class ProjectState {
     this.isLoading = false,
     this.projectCreated = false,
     this.errorMessage = '',
+    this.fileNames = const [],
+    this.documents = const [],
   });
 
   ProjectState copyWith({
@@ -48,6 +52,8 @@ class ProjectState {
     bool? isLoading,
     bool? projectCreated,
     String? errorMessage,
+    List<String>? fileNames,
+    List<Document>? documents,
   }) {
     return ProjectState(
       name: name ?? this.name,
@@ -64,6 +70,8 @@ class ProjectState {
       isLoading: isLoading ?? this.isLoading,
       projectCreated: projectCreated ?? this.projectCreated,
       errorMessage: errorMessage ?? this.errorMessage,
+      fileNames: fileNames ?? this.fileNames,
+      documents: documents ?? this.documents,
     );
   }
 }
