@@ -97,6 +97,4 @@ class ProjectCubit extends Cubit<ProjectState> {
       emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
     }
   }
-
-  //create File`s objects and upload to the server
 }
