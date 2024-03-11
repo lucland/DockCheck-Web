@@ -29,7 +29,6 @@ class Details extends StatelessWidget {
 }
 
 class DetailsView extends StatelessWidget {
-  final ScrollController _scrollController = ScrollController();
   final Employee employee;
 
   DetailsView({
