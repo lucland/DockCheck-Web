@@ -48,4 +48,15 @@ class InviteRepository {
       return invite;
     }
   }
+
+  //cancelInvite
+  Future<bool> cancelInvite(String id) async {
+    try {
+      final response = await apiService.delete('invites/$id');
+      return response['message'] == 'Invite cancelled successfully';
+    } catch (e) {
+      SimpleLogger.severe('Failed to cancel invite: ${e.toString()}');
+      return false;
+    }
+  }
 }
