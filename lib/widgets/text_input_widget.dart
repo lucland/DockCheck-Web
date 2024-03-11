@@ -9,8 +9,10 @@ class TextInputWidget extends StatelessWidget {
   final TextEditingController controller;
   final TextInputType keyboardType;
   final bool isRequired;
-  final bool isID;
+  final bool isError;
   final bool isPassword;
+  final bool isEnabled; // New parameter
+  final String? errorMessage;
   final void Function(String)? onChanged;
 
   const TextInputWidget({
@@ -19,13 +21,21 @@ class TextInputWidget extends StatelessWidget {
     required this.controller,
     this.keyboardType = TextInputType.text,
     this.isRequired = false,
-    this.isID = false,
-    this.onChanged,
+    this.isError = false,
     this.isPassword = false,
+    this.isEnabled = true, // Default value set to true
+    this.errorMessage,
+    this.onChanged,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    Color borderColor = isError ? DockColors.danger110 : DockColors.iron100;
+    if (!isEnabled) {
+      borderColor =
+          Colors.grey; // Change the borderColor when it is not enabled
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -55,59 +65,37 @@ class TextInputWidget extends StatelessWidget {
               hintText: title,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(
-                  color: DockColors.iron100,
+                borderSide: BorderSide(
+                  color: borderColor,
                   width: 1,
                 ),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(
-                  color: DockColors.iron100,
+                borderSide: BorderSide(
+                  color: borderColor,
                   width: 1,
                 ),
               ),
+              disabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(
+                  color: borderColor,
+                  width: 1,
+                ),
+              ),
+              errorText: isError ? errorMessage : null,
             ),
             cursorColor: DockColors.iron100,
             keyboardType: keyboardType,
             controller: controller,
-            onChanged: onChanged,
             obscureText: isPassword,
-            inputFormatters: isID
-                ? [
-                    IDInputFormatter(),
-                    LengthLimitingTextInputFormatter(12),
-                  ]
-                : [],
+            onChanged:
+                isEnabled ? onChanged : null, // Disable input if not enabled
+            enabled: isEnabled, // Use the isEnabled parameter
           ),
         ),
       ],
     );
-  }
-}
-
-class IDInputFormatter extends TextInputFormatter {
-  @override
-  TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue, TextEditingValue newValue) {
-    final newTextLength = newValue.text.length;
-    int selectionIndex = newValue.selection.end;
-
-    if (newTextLength >= oldValue.text.length) {
-      if (newTextLength == 2 || newTextLength == 6) {
-        newValue = TextEditingValue(
-          text: '${newValue.text}.',
-          selection: TextSelection.collapsed(offset: selectionIndex + 1),
-        );
-      }
-      if (newTextLength == 10) {
-        newValue = TextEditingValue(
-          text: '${newValue.text}-',
-          selection: TextSelection.collapsed(offset: selectionIndex + 1),
-        );
-      }
-    }
-
-    return newValue;
   }
 }
