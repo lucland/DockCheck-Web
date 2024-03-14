@@ -1,5 +1,7 @@
 import 'package:dockcheck_web/models/document.dart';
 
+import '../../../models/project.dart';
+
 class ProjectState {
   final String name;
   final DateTime? startDate;
@@ -17,6 +19,7 @@ class ProjectState {
   final String errorMessage;
   final List<String> fileNames;
   final List<Document> documents;
+  final List<Project> projects;
 
   ProjectState({
     this.name = '',
@@ -35,6 +38,7 @@ class ProjectState {
     this.errorMessage = '',
     this.fileNames = const [],
     this.documents = const [],
+    this.projects = const [],
   });
 
   ProjectState copyWith({
@@ -54,6 +58,7 @@ class ProjectState {
     String? errorMessage,
     List<String>? fileNames,
     List<Document>? documents,
+    List<Project>? projects,
   }) {
     return ProjectState(
       name: name ?? this.name,
@@ -72,6 +77,7 @@ class ProjectState {
       errorMessage: errorMessage ?? this.errorMessage,
       fileNames: fileNames ?? this.fileNames,
       documents: documents ?? this.documents,
+      projects: projects ?? this.projects,
     );
   }
 }

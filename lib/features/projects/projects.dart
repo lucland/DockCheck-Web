@@ -1,6 +1,10 @@
 import 'package:dockcheck_web/features/home/bloc/pesquisar_cubit.dart';
 import 'package:dockcheck_web/features/invite/invite.dart';
+import 'package:dockcheck_web/features/projects/bloc/project_cubit.dart';
+import 'package:dockcheck_web/features/projects/bloc/project_state.dart';
 import 'package:dockcheck_web/models/employee.dart';
+import 'package:dockcheck_web/models/project.dart';
+import 'package:dockcheck_web/widgets/project_details_modal.dart';
 import 'package:dockcheck_web/widgets/project_modal_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,32 +21,18 @@ class Projects extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.read<PesquisarCubit>().fetchEmployees();
+    context.read<ProjectCubit>().fetchProjects();
 
-    return BlocBuilder<PesquisarCubit, PesquisarState>(
+    return BlocBuilder<ProjectCubit, ProjectState>(
       builder: (context, state) {
-        if (state is PesquisarLoading) {
+        if (state.isLoading) {
           return SizedBox(
               width: MediaQuery.of(context).size.width - 300,
               child: const Center(
                 child: CircularProgressIndicator(),
               ));
-        } else if (state is PesquisarError) {
-          return SizedBox(
-            width: MediaQuery.of(context).size.width - 300,
-            child: const Center(
-              child: CircularProgressIndicator(),
-            ),
-          );
-        } else if (state is PesquisarLoaded) {
-          List<Employee> displayEmployees = state.employees;
-
-          if (context.read<PesquisarCubit>().isSearching) {
-            displayEmployees = displayEmployees
-                .where((employee) => employee.name.toLowerCase().contains(
-                    context.read<PesquisarCubit>().searchQuery.toLowerCase()))
-                .toList();
-          }
+        } else {
+          List<Project> allProjects = state.projects;
 
           return Container(
             color: DockColors.background,
@@ -65,7 +55,7 @@ class Projects extends StatelessWidget {
                       InkWell(
                         onTap: () {
                           //open modal with a text
-                          openModal(context, 'Adicionar funcionário');
+                          openModal(context, '');
                         },
                         child: Container(
                           height: 40,
@@ -102,149 +92,141 @@ class Projects extends StatelessWidget {
                       ),
                     ],
                   ),
-                  SingleChildScrollView(
-                      child: SizedBox(height: 500, child: InviteWidget())),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: !state.isLoading && state.projects.isNotEmpty
+                          ? ListView.builder(
+                              itemCount: allProjects.length,
+                              itemBuilder: (context, index) {
+                                //Employee employee = displayEmployees[index];
+                                Project project = allProjects[index];
+                                return _buildProjectListTile(context, project);
+                              },
+                            )
+                          : Center(
+                              child: Text(
+                                'Nenhum projeto encontrado',
+                                style: DockTheme.h2.copyWith(
+                                  color: DockColors.iron100,
+                                ),
+                              ),
+                            ),
+                    ),
+                  ),
                 ],
               ),
             ),
           );
-        } else {
-          return const Center(child: Text('Error'));
         }
       },
     );
   }
 
-  Widget _buildProjectListTile(BuildContext context) {
+  Widget _buildProjectListTile(BuildContext context, Project project) {
     return Padding(
         padding: const EdgeInsets.only(bottom: 16.0),
-        child: InkWell(
-          onTap: () {
-            // _openRightSideModal(context, employee);
-          },
-          child: Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(right: 16.0),
-                          child: Container(
-                            width: MediaQuery.of(context).size.width * 0.15,
-                            height: MediaQuery.of(context).size.width * 0.1,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(0.0),
-                            ),
-                            child: Image.asset(
-                              'assets/svg/skandi_iguacu.jpeg',
-                              fit: BoxFit.cover,
-                            ),
+        child: Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(right: 16.0),
+                        child: Container(
+                          width: MediaQuery.of(context).size.width * 0.15,
+                          height: MediaQuery.of(context).size.width * 0.1,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(0.0),
+                          ),
+                          child: Image.asset(
+                            'assets/svg/skandi_iguacu.jpeg',
+                            fit: BoxFit.cover,
                           ),
                         ),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Skandi Salvador',
-                                style: DockTheme.h1.copyWith(
-                                  color: DockColors.iron100,
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 26,
+                      ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Text(project.name,
+                                    style: DockTheme.h1.copyWith(
+                                      color: DockColors.iron100,
+                                    )),
+                                Spacer(),
+                                //a DockColors.iron100 badge with slitghly rounded corners containing a white bold text with the project.isDocking value
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                        color: DockColors.iron100, width: 1),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Text(
+                                    project.isDocking
+                                        ? 'DOCAGEM'
+                                        : 'MOBILIZAÇÃO',
+                                    style: DockTheme.body.copyWith(
+                                      color: DockColors.iron100,
+                                    ),
+                                  ),
                                 ),
+                              ],
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 4.0, horizontal: 16.0),
+                              child: Divider(
+                                color: DockColors.slate100.withAlpha(100),
+                                thickness: 1,
                               ),
-                              Text(
-                                'DOCAGEM',
-                                style: DockTheme.h2.copyWith(
-                                  color: DockColors.slate110,
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 14,
-                                ),
+                            ),
+                            Text(
+                              project.address,
+                              style: DockTheme.h2.copyWith(
+                                color: DockColors.slate110,
+                                fontWeight: FontWeight.w400,
+                                fontSize: 14,
                               ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 2.0, horizontal: 16.0),
-                                child: Divider(
-                                  color: DockColors.slate100.withAlpha(100),
-                                  thickness: 2,
-                                ),
+                            ),
+                            Text(
+                              '${'${project.dateStart.day}/${project.dateStart.month}/${project.dateStart.year}'} - ${'${project.dateEnd.day}/${project.dateEnd.month}/${project.dateEnd.year}'}',
+                              style: DockTheme.h2.copyWith(
+                                color: DockColors.iron100,
+                                fontSize: 14,
                               ),
-                              Text(
-                                '18/04/24 - 30/05/24',
-                                style: DockTheme.h2.copyWith(
-                                  color: DockColors.success100,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Text(
-                                '35 empresas convidadas',
-                                style: DockTheme.h2.copyWith(
-                                  color: DockColors.iron100,
-                                  fontWeight: FontWeight.normal,
-                                  fontSize: 14,
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Text(
-                                '20 empresas participantes',
-                                style: DockTheme.h2.copyWith(
-                                  color: DockColors.iron100,
-                                  fontWeight: FontWeight.normal,
-                                  fontSize: 14,
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 30,
-                              ),
-                            ],
-                          ),
+                            ),
+                            Spacer(),
+                            InviteWidget(projectId: project.id),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                  const Padding(
-                    padding: EdgeInsets.only(left: 16.0),
-                    child: Icon(
-                      Icons.arrow_forward_ios,
-                      color: DockColors.iron100,
-                      size: 24,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ));
   }
 
-  void _openRightSideModal(BuildContext context, Employee employee) {
-    showModalBottomSheet(
+  //open modal with project details function
+  void openDetailsModal(BuildContext context, Project project) {
+    showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return FractionallySizedBox(
-          heightFactor: 1,
-          child: SizedBox(
-            width: MediaQuery.of(context).size.width *
-                0.5, // 50% width of the screen
-            child: Details(
-                employee:
-                    employee), // Assuming Details widget takes a user as a parameter
-          ),
+      barrierDismissible: false,
+      builder: (context) {
+        return ProjectDetailsModal(
+          project: project,
         );
       },
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent, // Makes background transparent
     );
   }
 
