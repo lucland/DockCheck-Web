@@ -18,22 +18,10 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  List<Widget> listWidget = [
-    Container(
-      color: Colors.amber,
-      height: 500,
-    ),
-    Container(
-      color: Colors.purple,
-      height: 500,
-    )
-  ];
-
   String selectedPage = 'projetos';
 
   @override
   Widget build(BuildContext context) {
-    context.read<PesquisarCubit>().fetchEmployees();
     return Scaffold(
       body: Row(
         children: [
@@ -136,6 +124,7 @@ class _HomeState extends State<Home> {
                         ),
                       ),
                     ),
+                    /*
                     InkWell(
                       onTap: () {
                         setState(() {
@@ -177,6 +166,7 @@ class _HomeState extends State<Home> {
                         ),
                       ),
                     ),
+                    */
                   ],
                 ),
                 //text with version
@@ -258,14 +248,9 @@ class _HomeState extends State<Home> {
             ),
           ),
           if (selectedPage == 'funcionarios') ...{
-            FuncionariosWidget(listWidget: listWidget),
+            FuncionariosWidget(),
           } else if (selectedPage == 'projetos') ...{
             const Projects(),
-          } else if (selectedPage == 'dashboard') ...{
-            Container(
-              color: Colors.green,
-              height: 500,
-            )
           }
         ],
       ),
