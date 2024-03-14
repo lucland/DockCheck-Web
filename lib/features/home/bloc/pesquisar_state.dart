@@ -9,8 +9,7 @@ class PesquisarLoading extends PesquisarState {}
 
 class PesquisarLoaded extends PesquisarState {
   final List<Employee> employees;
-  final List<Project> projects;
-  PesquisarLoaded(this.employees, this.projects);
+  PesquisarLoaded(this.employees);
 }
 
 //add state for employee loaded

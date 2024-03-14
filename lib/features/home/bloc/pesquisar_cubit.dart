@@ -11,7 +11,6 @@ class PesquisarCubit extends Cubit<PesquisarState> {
   final EmployeeRepository employeeRepository;
   final ProjectRepository projectRepository;
   List<Employee> allEmployee = [];
-  List<Project> allProjects = [];
   List<Employee> filteredEmployee = [];
   bool isSearching = false;
   String searchQuery = '';
@@ -30,38 +29,11 @@ class PesquisarCubit extends Cubit<PesquisarState> {
         emit(PesquisarLoading());
       }
 
-      allProjects = await projectRepository.getAllProjects();
-
       allEmployee = await employeeRepository.getAllEmployees();
       print(allEmployee.length);
 
       if (!isClosed) {
-        emit(PesquisarLoaded(allEmployee, allProjects));
-      }
-    } catch (e) {
-      SimpleLogger.warning('Error during data synchronization: $e');
-      if (!isClosed) {
-        emit(PesquisarError("Failed to fetch users1. $e"));
-      }
-    }
-  }
-
-  //fetchProjects
-  Future<void> fetchProjects() async {
-    SimpleLogger.info('Fetching projects');
-    try {
-      if (!isClosed) {
-        emit(PesquisarLoading());
-      }
-
-      allProjects = await projectRepository.getAllProjects();
-
-      if (!isClosed) {
-        if (isSearching) {
-          _applySearchFilter();
-        } else {
-          emit(PesquisarLoaded(allEmployee, allProjects));
-        }
+        emit(PesquisarLoaded(allEmployee));
       }
     } catch (e) {
       SimpleLogger.warning('Error during data synchronization: $e');
@@ -91,7 +63,7 @@ class PesquisarCubit extends Cubit<PesquisarState> {
           .toList();
 
       if (!isClosed) {
-        emit(PesquisarLoaded(filteredEmployee, allProjects));
+        emit(PesquisarLoaded(filteredEmployee));
       }
     } catch (e) {
       SimpleLogger.warning('Error during data synchronization: $e');
@@ -107,7 +79,7 @@ class PesquisarCubit extends Cubit<PesquisarState> {
             employee.name.toLowerCase().contains(searchQuery.toLowerCase()))
         .toList();
 
-    emit(PesquisarLoaded(filteredEmployee, allProjects));
+    emit(PesquisarLoaded(filteredEmployee));
   }
 
   @override
