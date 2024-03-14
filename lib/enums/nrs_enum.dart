@@ -1,4 +1,7 @@
 class NrsEnum {
+  static const String irata_n1 = 'Irata N1';
+  static const String irata_n2 = 'Irata N2';
+  static const String irata_n3 = 'Irata N3';
   static const String nr1 =
       'NR-1 - DISPOSIÇÕES GERAIS E GERENCIAMENTO DE RISCOS OCUPACIONAIS';
   static const String nr2 = 'NR-2 - INSPEÇÃO PRÉVIA (REVOGADA)';
@@ -58,6 +61,9 @@ class NrsEnum {
       'NR-38 - SEGURANÇA E SAÚDE NO TRABALHO NAS ATIVIDADES DE LIMPEZA URBANA E MANEJO DE RESÍDUOS SÓLIDOS';
 
   static const List<String> nrs = [
+    irata_n1,
+    irata_n2,
+    irata_n3,
     nr1,
     nr2,
     nr3,
