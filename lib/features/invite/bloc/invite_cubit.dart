@@ -11,14 +11,14 @@ class InviteCubit extends Cubit<InviteState> {
   InviteCubit(this.inviteRepository) : super(InviteState());
 
   void sendInvite(String email, String companyName) async {
+    emit(state.copyWith(isLoading: true, isInputEnabled: false));
     if (!_validateEmail(email)) {
-      emit(state.copyWith(isEmailValid: false));
+      emit(state.copyWith(
+          isEmailValid: false, isLoading: false, isInputEnabled: true));
       return;
     }
-    emit(state.copyWith(
-        isLoading: true, isEmailValid: true, isInputEnabled: false));
-    /*final newInvite = Invite(
-      id: const Uuid().v4(),
+    Invite invite = Invite(
+      id: Uuid().v4(),
       email: email,
       accepted: false,
       sent: true,
@@ -26,17 +26,14 @@ class InviteCubit extends Cubit<InviteState> {
       dateSent: DateTime.now(),
       viewed: false,
     );
-
-    final result = await inviteRepository.createInvite(newInvite);
-    if (result.id.isNotEmpty) {
+    final result = await inviteRepository.createInvite(invite);
+    if (result != null) {
+      emit(state.copyWith(isLoading: false, isInputEnabled: true));
       getAllInvites();
     } else {
       emit(
-          state.copyWith(error: 'Falha ao enviar o convite', isLoading: false, isInputEnabled: true));
-    }*/
-    //wait 2 seconds to simulate the API call
-    await Future.delayed(const Duration(seconds: 3));
-    getAllInvites();
+          state.copyWith(error: 'Falha ao enviar o convite', isLoading: false));
+    }
   }
 
   bool _validateEmail(String email) {
@@ -49,45 +46,15 @@ class InviteCubit extends Cubit<InviteState> {
   }
 
   void getAllInvites() async {
-    emit(state.copyWith(isLoading: true));
-    /*  final invites = await inviteRepository.getAllInvites();
-    //if invites is empty, return a list with mock data
-    if (invites.isEmpty) {*/
+    if (state.isLoading == false) {
+      (state.copyWith(isLoading: true));
+    }
+    final invites = await inviteRepository.getAllInvites();
+    //reorder the invites to show the most recent first
+    invites.sort((a, b) => b.dateSent.compareTo(a.dateSent));
+
     emit(state.copyWith(
-      invites: [
-        Invite(
-            id: '1',
-            email: 'mock1@email.com',
-            accepted: false,
-            sent: true,
-            thirdCompanyName: 'mockCompany 1',
-            dateSent: DateTime.now(),
-            viewed: false),
-        Invite(
-            id: '2',
-            email: 'mock2@email.com',
-            accepted: false,
-            sent: true,
-            thirdCompanyName: 'mockCompany 2',
-            dateSent: DateTime.now(),
-            viewed: false),
-        Invite(
-            id: '3',
-            email: 'mock3@email.com',
-            accepted: true,
-            sent: true,
-            thirdCompanyName: 'mockCompany 3',
-            dateSent: DateTime.now(),
-            viewed: true),
-      ],
-      isLoading: false,
-      isInputEnabled: true,
-    ));
-    /*
-    } else {
-      emit(state.copyWith(
-          invites: invites, isLoading: false, isInputEnabled: true));
-    }*/
+        invites: invites, isLoading: false, isInputEnabled: true));
   }
 
   void cancelInvite(String inviteId) async {
@@ -102,7 +69,6 @@ class InviteCubit extends Cubit<InviteState> {
   }
 
   void resendInvite(String email, String companyName) async {
-    emit(state.copyWith(isLoading: true));
     sendInvite(email, companyName);
   }
 }

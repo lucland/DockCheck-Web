@@ -35,21 +35,15 @@ class EmployeeRepository {
   }
 
   Future<List<Employee>> getAllEmployees() async {
-    try {
-      final data = await apiService.get('employees');
-      if (data != null) {
-        print("Data fetched: $data");
-        var list =
-            (data as List).map((item) => Employee.fromJson(item)).toList();
-        print("First employee name: ${list.first.name}"); // More detailed log
-        return list;
-      } else {
-        print("Data fetched is null");
-        return [];
-      }
-    } catch (e) {
-      print('Failed to get employees: ${e.toString()}');
-      return []; // Return an empty list as a fallback
+    final data = await apiService.get('employees');
+    if (data != null && data is List) {
+      print("Data fetched: $data");
+      var list = (data).map((item) => Employee.fromJson(item)).toList();
+      print("First employee name: ${list.first.name}"); // More detailed log
+      return list;
+    } else {
+      print("Data fetched is null");
+      return [];
     }
   }
 

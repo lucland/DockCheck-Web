@@ -24,6 +24,18 @@ class ProjectCubit extends Cubit<ProjectState> {
     loggedUserId = await loggedInUser ?? '';
   }
 
+  //fetch all projects from the repository and emit the state with the projects
+  void fetchProjects() async {
+    emit(state.copyWith(
+        isLoading: true, startDate: DateTime.now(), endDate: DateTime.now()));
+    try {
+      final projects = await projectRepository.getAllProjects();
+      emit(state.copyWith(isLoading: false, projects: projects));
+    } catch (e) {
+      emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
+    }
+  }
+
   void updateName(String name) => emit(state.copyWith(name: name));
 
   void updateStartDate(DateTime startDate) =>
@@ -71,25 +83,29 @@ class ProjectCubit extends Cubit<ProjectState> {
   void updateIsDocking(bool isDocking) =>
       emit(state.copyWith(isDocking: isDocking));
 
+  //update the address
+  void updateAddress(String address) => emit(state.copyWith(address: address));
+
   // Implement other update methods following the pattern above
 
-  void createProject() async {
-    emit(state.copyWith(isLoading: true));
+  void createProject(String name, String vesselId, String address) async {
+    emit(state.copyWith(
+        isLoading: true, name: name, vesselId: vesselId, address: address));
 
     try {
       final project = Project(
         id: const Uuid().v4(), // Generate a new UUID for the project
         name: state.name,
-        dateStart: state.startDate!,
-        dateEnd: state.endDate!,
+        dateStart: state.startDate ?? DateTime.now(),
+        dateEnd: state.endDate ?? DateTime.now(),
         vesselId: state.vesselId,
-        companyId: state.companyId,
-        thirdCompaniesId: state.thirdCompaniesId,
-        adminsId: state.adminsId,
-        areasId: state.areasId,
+        companyId: "companyId",
+        thirdCompaniesId: state.thirdCompaniesId ?? [""],
+        adminsId: [loggedUserId],
+        areasId: [""],
         address: state.address,
         isDocking: state.isDocking,
-        status: state.status,
+        status: 'created',
       );
       await projectRepository.createProject(project);
       emit(state.copyWith(isLoading: false, projectCreated: true));

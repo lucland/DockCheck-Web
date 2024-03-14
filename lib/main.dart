@@ -109,8 +109,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: DockTheme.theme,
-      home: isLoggedIn() ? const Home() : Login(),
-      // home: Login(),
+      // home: isLoggedIn() ? const Home() : Login(),
+      home: Login(),
       //if the
       //home: const Home(),
     );
