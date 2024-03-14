@@ -14,21 +14,28 @@ class LocalStorageService {
     var box = await Hive.openBox('secureBox');
     SimpleLogger.info("Saving token: $token");
     await box.put('jwt_token', token);
-    await box.close();
+    if (box.isOpen) {
+      await box.close();
+    }
   }
 
   Future<void> deleteToken() async {
     var box = await Hive.openBox('secureBox');
     SimpleLogger.info("Deleting token");
     await box.delete('jwt_token');
-    await box.close();
+    if (box.isOpen) {
+      await box.close();
+    }
   }
 
   Future<String?> getToken() async {
     var box = await Hive.openBox('secureBox');
     SimpleLogger.info("Getting token");
-    String? token = box.get('jwt_token');
-    await box.close();
+    String token = box.get('jwt_token') ?? "";
+    print(token);
+    if (box.isOpen) {
+      await box.close();
+    }
     return token;
   }
 
@@ -36,21 +43,27 @@ class LocalStorageService {
     var box = await Hive.openBox('secureBox');
     SimpleLogger.info("Saving vesselId: $vesselId");
     await box.put('vessel_id', vesselId);
-    await box.close();
+    if (box.isOpen) {
+      await box.close();
+    }
   }
 
   Future<void> deleteVesselId() async {
     var box = await Hive.openBox('secureBox');
     SimpleLogger.info("Deleting vesselId");
     await box.delete('vessel_id');
-    await box.close();
+    if (box.isOpen) {
+      await box.close();
+    }
   }
 
   Future<String?> getVesselId() async {
     var box = await Hive.openBox('secureBox');
     SimpleLogger.info("Getting vesselId");
     String? vesselId = box.get('vessel_id');
-    await box.close();
+    if (box.isOpen) {
+      await box.close();
+    }
     return vesselId;
   }
 
@@ -58,21 +71,28 @@ class LocalStorageService {
     var box = await Hive.openBox('secureBox');
     SimpleLogger.info("Saving userId: $userId");
     await box.put('user_id', userId);
-    await box.close();
+    if (box.isOpen) {
+      await box.close();
+    }
   }
 
   Future<void> deleteUserId() async {
     var box = await Hive.openBox('secureBox');
     SimpleLogger.info("Deleting userId");
     await box.delete('user_id');
-    await box.close();
+    if (box.isOpen) {
+      await box.close();
+    }
   }
 
   Future<String?> getUserId() async {
     var box = await Hive.openBox('secureBox');
     SimpleLogger.info("Getting userId");
-    String? userId = box.get('user_id');
-    await box.close();
+    String userId = box.get('user_id') ?? "";
+    print(userId);
+    if (box.isOpen) {
+      await box.close();
+    }
     return userId;
   }
 
@@ -80,21 +100,27 @@ class LocalStorageService {
     var box = await Hive.openBox('secureBox');
     SimpleLogger.info("Saving username: $username");
     await box.put('username', username);
-    await box.close();
+    if (box.isOpen) {
+      await box.close();
+    }
   }
 
   Future<void> deleteUsername() async {
     var box = await Hive.openBox('secureBox');
     SimpleLogger.info("Deleting username");
     await box.delete('username');
-    await box.close();
+    if (box.isOpen) {
+      await box.close();
+    }
   }
 
   Future<String?> getUsername() async {
     var box = await Hive.openBox('secureBox');
     SimpleLogger.info("Getting username");
     String? username = box.get('username');
-    await box.close();
+    if (box.isOpen) {
+      await box.close();
+    }
     return username;
   }
 
@@ -102,21 +128,27 @@ class LocalStorageService {
     var box = await Hive.openBox('secureBox');
     SimpleLogger.info("Saving user: ${user.toJson()}");
     await box.put('user', jsonEncode(user.toJson()));
-    await box.close();
+    if (box.isOpen) {
+      await box.close();
+    }
   }
 
   Future<void> deleteUser() async {
     var box = await Hive.openBox('secureBox');
     SimpleLogger.info("Deleting user");
     await box.delete('user');
-    await box.close();
+    if (box.isOpen) {
+      await box.close();
+    }
   }
 
   Future<User?> getUser() async {
     var box = await Hive.openBox('secureBox');
     SimpleLogger.info("Getting user");
     String? userString = box.get('user');
-    await box.close();
+    if (box.isOpen) {
+      await box.close();
+    }
     if (userString != null) {
       return User.fromJson(jsonDecode(userString));
     } else {
