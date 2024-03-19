@@ -1,5 +1,4 @@
 class NrsEnum {
-  //nr10, nr11, nr33, nr34, nr35, nr37,
   static const String irata_n1 = 'Irata N1';
   static const String irata_n2 = 'Irata N2';
   static const String irata_n3 = 'Irata N3';
