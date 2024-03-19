@@ -13,7 +13,10 @@ import 'cadastrar_modal_widget.dart';
 class FuncionariosWidget extends StatelessWidget {
   const FuncionariosWidget({
     super.key,
+    required this.listWidget,
   });
+
+  final List<Widget> listWidget;
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +25,6 @@ class FuncionariosWidget extends StatelessWidget {
     return BlocBuilder<PesquisarCubit, PesquisarState>(
       builder: (context, state) {
         if (state is PesquisarLoading) {
-          print('loading state');
           return SizedBox(
               width: MediaQuery.of(context).size.width - 300,
               child: const Center(
@@ -36,8 +38,6 @@ class FuncionariosWidget extends StatelessWidget {
             ),
           );
         } else if (state is PesquisarLoaded) {
-          print('loaded state');
-
           List<Employee> displayEmployees = state.employees;
           print(displayEmployees.length + 1);
           if (context.read<PesquisarCubit>().isSearching) {
@@ -270,7 +270,7 @@ class FuncionariosWidget extends StatelessWidget {
           child: SizedBox(
             width: MediaQuery.of(context).size.width *
                 0.5, // 50% width of the screen
-            child: Details(
+            child: DetailsView(
                 employee:
                     employee), // Assuming Details widget takes a user as a parameter
           ),

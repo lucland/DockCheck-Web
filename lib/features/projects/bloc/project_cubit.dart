@@ -26,10 +26,13 @@ class ProjectCubit extends Cubit<ProjectState> {
 
   //fetch all projects from the repository and emit the state with the projects
   void fetchProjects() async {
+    print('fetchProjects');
     emit(state.copyWith(
         isLoading: true, startDate: DateTime.now(), endDate: DateTime.now()));
     try {
       final projects = await projectRepository.getAllProjects();
+      //reorder the projects to show the most recent first
+      projects.sort((a, b) => b.dateStart.compareTo(a.dateStart));
       emit(state.copyWith(isLoading: false, projects: projects));
     } catch (e) {
       emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
@@ -90,7 +93,11 @@ class ProjectCubit extends Cubit<ProjectState> {
 
   void createProject(String name, String vesselId, String address) async {
     emit(state.copyWith(
-        isLoading: true, name: name, vesselId: vesselId, address: address));
+        isLoading: true,
+        name: name,
+        vesselId: vesselId,
+        address: address,
+        thirdCompaniesId: []));
 
     try {
       final project = Project(
@@ -100,9 +107,9 @@ class ProjectCubit extends Cubit<ProjectState> {
         dateEnd: state.endDate ?? DateTime.now(),
         vesselId: state.vesselId,
         companyId: "companyId",
-        thirdCompaniesId: state.thirdCompaniesId ?? [""],
+        thirdCompaniesId: state.thirdCompaniesId,
         adminsId: [loggedUserId],
-        areasId: [""],
+        areasId: ["areasId"],
         address: state.address,
         isDocking: state.isDocking,
         status: 'created',

@@ -36,17 +36,17 @@ class CadastrarCubit extends Cubit<CadastrarState> {
           CadastrarState(
             numero: 0,
             employee: Employee(
-              id: '',
+              id: const Uuid().v1(),
               authorizationsId: [""],
               name: '',
               thirdCompanyId: '',
               visitorCompany: '',
               role: '',
               number: 0,
-              bloodType: '-',
+              bloodType: 'A+',
               cpf: '-',
               email: '-',
-              area: 'Praça de Máquinas',
+              area: 'Ambos',
               lastAreaFound: '',
               lastTimeFound: DateTime.now(),
               isBlocked: false,
@@ -96,6 +96,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
         }
       } catch (e) {
         SimpleLogger.warning('Error during data synchronization: $e');
+        print(e.toString());
         if (!isClosed) {
           emit(state.copyWith(
             isLoading: false,
@@ -104,6 +105,12 @@ class CadastrarCubit extends Cubit<CadastrarState> {
         }
       }
     }
+  }
+
+  //updateAuthorizationType updating employee.area
+  void updateAuthorizationType(String authorizationType) {
+    final employee = state.employee.copyWith(area: authorizationType);
+    emit(state.copyWith(employee: employee));
   }
 
   void addNrType(String nrType) {
@@ -124,15 +131,28 @@ class CadastrarCubit extends Cubit<CadastrarState> {
     emit(state.copyWith(selectedNr: nrType));
   }
 
-  void addDocument(Document document) {
+  void addDocument(PlatformFile file) {
+    //turn file to base64
+    final String base64 = base64Encode(file.bytes!);
+
     final updatedDocuments = List<Document>.from(state.documents)
-      ..add(document);
+      ..add(Document(
+        id: const Uuid().v4(),
+        type: file.extension ?? 'unknown',
+        employeeId: state.employee.id,
+        expirationDate: DateTime.now().add(const Duration(days: 365)),
+        path: base64,
+        status: 'pending',
+      ));
     emit(state.copyWith(documents: updatedDocuments));
   }
 
   Future<void> pickImage() async {
+    Employee employee = state.employee;
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.image,
+      allowCompression: true,
+      compressionQuality: 90,
     );
 
     //receive the bytes of the image, convert it to base64 and update the state
@@ -140,8 +160,15 @@ class CadastrarCubit extends Cubit<CadastrarState> {
       Uint8List bytes = result.files.first.bytes!;
       String base64Image = base64Encode(bytes);
       final picture = state.picture.copyWith(base64: base64Image);
-      emit(state.copyWith(picture: picture));
+      emit(state.copyWith(picture: picture, employee: employee));
     }
+  }
+
+  //add third company name to the employee
+  void addThirdCompany(String thirdCompany) {
+    final employee = state.employee.copyWith(thirdCompanyId: thirdCompany);
+    emit(state.copyWith(employee: employee));
+    checkCadastroHabilitado();
   }
 
   void removeImage() {
@@ -165,6 +192,31 @@ class CadastrarCubit extends Cubit<CadastrarState> {
     }
   }
 
+  //updateEmail, updateCpf and updateRole follow the same pattern
+  void updateEmail(String email) {
+    final employee = state.employee.copyWith(email: email);
+    if (!isClosed) {
+      emit(state.copyWith(employee: employee));
+      checkCadastroHabilitado();
+    }
+  }
+
+  void updateCpf(String cpf) {
+    final employee = state.employee.copyWith(cpf: cpf);
+    if (!isClosed) {
+      emit(state.copyWith(employee: employee));
+      checkCadastroHabilitado();
+    }
+  }
+
+  void updateRole(String role) {
+    final employee = state.employee.copyWith(role: role);
+    if (!isClosed) {
+      emit(state.copyWith(employee: employee));
+      checkCadastroHabilitado();
+    }
+  }
+
   void updateEmpresa(String empresa) {
     final employee = state.employee.copyWith(thirdCompanyId: empresa);
     if (!isClosed) {
@@ -178,17 +230,17 @@ class CadastrarCubit extends Cubit<CadastrarState> {
     if (!isClosed) {
       emit(state.copyWith(
         employee: Employee(
-          id: '',
+          id: const Uuid().v1(),
           authorizationsId: [""],
           name: '',
           thirdCompanyId: '',
           visitorCompany: '',
           role: '',
           number: 0,
-          bloodType: '-',
+          bloodType: 'A+',
           cpf: '-',
           email: '-',
-          area: 'Praça de Máquinas',
+          area: 'Ambos',
           lastAreaFound: '',
           lastTimeFound: DateTime.now(),
           isBlocked: false,
@@ -225,8 +277,9 @@ class CadastrarCubit extends Cubit<CadastrarState> {
     }
   }
 
-  void createEvent() async {
-    SimpleLogger.info('Creating event');
+  void createEvent(String name, String cpf, String email, String funcao,
+      String empresa, String bloodType) async {
+    fetchNumero();
     final event = state.event.copyWith(
       employeeId: state.employee.id,
       timestamp: DateTime.now(),
@@ -236,16 +289,29 @@ class CadastrarCubit extends Cubit<CadastrarState> {
       status: 'created',
       beaconId: '1',
     );
+
     if (!isClosed) {
-      emit(state.copyWith(event: event));
+      emit(state.copyWith(
+        employee: state.employee.copyWith(
+          name: name,
+          cpf: cpf,
+          email: email,
+          role: funcao,
+          thirdCompanyId: empresa,
+          bloodType: bloodType,
+        ),
+        event: event,
+      ));
     }
     try {
-      await eventRepository.createEvent(event);
+      //await eventRepository.createEvent(event);
+      print('Event created');
       SimpleLogger.info('Event created');
       if (!isClosed) {
         createPicture();
       }
     } catch (e) {
+      print(e.toString());
       SimpleLogger.warning('Error cadastrar_cubit createEvent: $e');
       if (!isClosed) {
         emit(state.copyWith(
@@ -257,19 +323,30 @@ class CadastrarCubit extends Cubit<CadastrarState> {
 
 //create picture with PictureRepository passing state.picture
   Future<void> createPicture() async {
-    if (!isClosed) {
-      try {
-        await pictureRepository.createEmployeePicture(state.picture);
-        SimpleLogger.info('Picture created');
-        if (!isClosed) {
-          createDocuments();
-        }
-      } catch (e) {
-        SimpleLogger.warning('Error cadastrar_cubit createPicture: $e');
-        if (!isClosed) {
-          emit(state.copyWith(
-            errorMessage: e.toString(),
-          ));
+    if (state.picture.base64.isEmpty || state.picture.base64 == '-') {
+      if (!isClosed) {
+        createDocuments();
+      }
+    } else {
+      if (!isClosed) {
+        emit(state.copyWith(
+            picture: state.picture
+                .copyWith(status: 'created', employeeId: state.employee.id)));
+        try {
+          await pictureRepository.createEmployeePicture(state.picture);
+          print(documentRepository);
+          SimpleLogger.info('Picture created');
+          if (!isClosed) {
+            createDocuments();
+          }
+        } catch (e) {
+          print(e.toString());
+          SimpleLogger.warning('Error cadastrar_cubit createPicture: $e');
+          if (!isClosed) {
+            emit(state.copyWith(
+              errorMessage: e.toString(),
+            ));
+          }
         }
       }
     }
@@ -277,12 +354,20 @@ class CadastrarCubit extends Cubit<CadastrarState> {
 
   //create documents, for each Document in state.documents, create a document with DocumentRepository passing the document
   Future<void> createDocuments() async {
+    print("createDocuments");
+    if (state.documents.isEmpty) {
+      if (!isClosed) {
+        createEmployee();
+      }
+    }
     if (!isClosed) {
       for (var document in state.documents) {
         try {
+          print('Creating document');
           await documentRepository.createDocument(document);
           SimpleLogger.info('Document created');
         } catch (e) {
+          print(e.toString());
           SimpleLogger.warning('Error cadastrar_cubit createDocuments: $e');
           if (!isClosed) {
             emit(state.copyWith(
@@ -300,15 +385,16 @@ class CadastrarCubit extends Cubit<CadastrarState> {
 
   Future<void> createEmployee() async {
     if (!isClosed) {
-      final employee =
-          state.employee.copyWith(id: const Uuid().v1(), documentsOk: true);
+      final employee = state.employee.copyWith(documentsOk: true);
       emit(state.copyWith(employee: employee));
       try {
         await employeeRepository.createEmployee(state.employee);
         SimpleLogger.info('Employee created');
+        print('Employee created');
         emit(state.copyWith(employeeCreated: true));
       } catch (e) {
         SimpleLogger.warning('Error cadastrar_cubit createEmployee: $e');
+        print(e.toString());
         if (!isClosed) {
           emit(state.copyWith(
             errorMessage: e.toString(),
@@ -346,8 +432,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
     return state.employee.name.isNotEmpty &&
         state.employee.role.isNotEmpty &&
         state.employee.thirdCompanyId.isNotEmpty &&
-        state.employee.area.isNotEmpty &&
-        state.picture.base64.isNotEmpty;
+        state.employee.area.isNotEmpty;
   }
 
   bool visitorChecksPassed() {

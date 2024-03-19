@@ -4,155 +4,130 @@ import '../models/user.dart';
 import '../utils/simple_logger.dart';
 
 class LocalStorageService {
-  // Initialize Hive
+  static final LocalStorageService _instance = LocalStorageService._internal();
+  Box? _secureBox;
+
+  LocalStorageService._internal();
+
+  factory LocalStorageService() {
+    return _instance;
+  }
+
+  // Initialize Hive and open the secureBox
   Future<void> init() async {
     Hive.init('./');
-    SimpleLogger.info("Initializing Local Storage Service with Hive");
+    _secureBox = await Hive.openBox('secureBox');
+    SimpleLogger.info("LocalStorageService initialized and secureBox opened");
+  }
+
+  Future<void> _ensureBoxIsOpen() async {
+    if (_secureBox == null || !_secureBox!.isOpen) {
+      _secureBox = await Hive.openBox('secureBox');
+    }
   }
 
   Future<void> saveToken(String token) async {
-    var box = await Hive.openBox('secureBox');
+    await _ensureBoxIsOpen();
     SimpleLogger.info("Saving token: $token");
-    await box.put('jwt_token', token);
-    if (box.isOpen) {
-      await box.close();
-    }
+    await _secureBox!.put('jwt_token', token);
   }
 
   Future<void> deleteToken() async {
-    var box = await Hive.openBox('secureBox');
+    await _ensureBoxIsOpen();
     SimpleLogger.info("Deleting token");
-    await box.delete('jwt_token');
-    if (box.isOpen) {
-      await box.close();
-    }
+    await _secureBox!.delete('jwt_token');
   }
 
   Future<String?> getToken() async {
-    var box = await Hive.openBox('secureBox');
+    await _ensureBoxIsOpen();
     SimpleLogger.info("Getting token");
-    String token = box.get('jwt_token') ?? "";
-    print(token);
-    if (box.isOpen) {
-      await box.close();
-    }
+    String? token = _secureBox!.get('jwt_token');
     return token;
   }
 
   Future<void> saveVesselId(String vesselId) async {
-    var box = await Hive.openBox('secureBox');
+    await _ensureBoxIsOpen();
     SimpleLogger.info("Saving vesselId: $vesselId");
-    await box.put('vessel_id', vesselId);
-    if (box.isOpen) {
-      await box.close();
-    }
+    await _secureBox!.put('vessel_id', vesselId);
   }
 
   Future<void> deleteVesselId() async {
-    var box = await Hive.openBox('secureBox');
+    await _ensureBoxIsOpen();
     SimpleLogger.info("Deleting vesselId");
-    await box.delete('vessel_id');
-    if (box.isOpen) {
-      await box.close();
-    }
+    await _secureBox!.delete('vessel_id');
   }
 
   Future<String?> getVesselId() async {
-    var box = await Hive.openBox('secureBox');
+    await _ensureBoxIsOpen();
     SimpleLogger.info("Getting vesselId");
-    String? vesselId = box.get('vessel_id');
-    if (box.isOpen) {
-      await box.close();
-    }
+    String? vesselId = _secureBox!.get('vessel_id');
     return vesselId;
   }
 
   Future<void> saveUserId(String userId) async {
-    var box = await Hive.openBox('secureBox');
+    await _ensureBoxIsOpen();
     SimpleLogger.info("Saving userId: $userId");
-    await box.put('user_id', userId);
-    if (box.isOpen) {
-      await box.close();
-    }
+    await _secureBox!.put('user_id', userId);
   }
 
   Future<void> deleteUserId() async {
-    var box = await Hive.openBox('secureBox');
+    await _ensureBoxIsOpen();
     SimpleLogger.info("Deleting userId");
-    await box.delete('user_id');
-    if (box.isOpen) {
-      await box.close();
-    }
+    await _secureBox!.delete('user_id');
   }
 
   Future<String?> getUserId() async {
-    var box = await Hive.openBox('secureBox');
+    await _ensureBoxIsOpen();
     SimpleLogger.info("Getting userId");
-    String userId = box.get('user_id') ?? "";
-    print(userId);
-    if (box.isOpen) {
-      await box.close();
-    }
+    String? userId = _secureBox!.get('user_id');
     return userId;
   }
 
   Future<void> saveUsername(String username) async {
-    var box = await Hive.openBox('secureBox');
+    await _ensureBoxIsOpen();
     SimpleLogger.info("Saving username: $username");
-    await box.put('username', username);
-    if (box.isOpen) {
-      await box.close();
-    }
+    await _secureBox!.put('username', username);
   }
 
   Future<void> deleteUsername() async {
-    var box = await Hive.openBox('secureBox');
+    await _ensureBoxIsOpen();
     SimpleLogger.info("Deleting username");
-    await box.delete('username');
-    if (box.isOpen) {
-      await box.close();
-    }
+    await _secureBox!.delete('username');
   }
 
   Future<String?> getUsername() async {
-    var box = await Hive.openBox('secureBox');
+    await _ensureBoxIsOpen();
     SimpleLogger.info("Getting username");
-    String? username = box.get('username');
-    if (box.isOpen) {
-      await box.close();
-    }
+    String? username = _secureBox!.get('username');
     return username;
   }
 
   Future<void> saveUser(User user) async {
-    var box = await Hive.openBox('secureBox');
+    await _ensureBoxIsOpen();
     SimpleLogger.info("Saving user: ${user.toJson()}");
-    await box.put('user', jsonEncode(user.toJson()));
-    if (box.isOpen) {
-      await box.close();
-    }
+    await _secureBox!.put('user', jsonEncode(user.toJson()));
   }
 
   Future<void> deleteUser() async {
-    var box = await Hive.openBox('secureBox');
+    await _ensureBoxIsOpen();
     SimpleLogger.info("Deleting user");
-    await box.delete('user');
-    if (box.isOpen) {
-      await box.close();
-    }
+    await _secureBox!.delete('user');
   }
 
   Future<User?> getUser() async {
-    var box = await Hive.openBox('secureBox');
+    await _ensureBoxIsOpen();
     SimpleLogger.info("Getting user");
-    String? userString = box.get('user');
-    if (box.isOpen) {
-      await box.close();
-    }
+    String? userString = _secureBox!.get('user');
     if (userString != null) {
       return User.fromJson(jsonDecode(userString));
     } else {
       return null;
+    }
+  }
+
+  Future<void> closeBox() async {
+    if (_secureBox != null && _secureBox!.isOpen) {
+      await _secureBox!.close();
     }
   }
 }

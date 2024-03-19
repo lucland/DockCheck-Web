@@ -1,8 +1,10 @@
 import 'package:dockcheck_web/features/home/bloc/pesquisar_cubit.dart';
 import 'package:dockcheck_web/features/home/home.dart';
 import 'package:dockcheck_web/features/invite/bloc/invite_cubit.dart';
+import 'package:dockcheck_web/firebase_options.dart';
 import 'package:dockcheck_web/models/project.dart';
 import 'package:dockcheck_web/utils/theme.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
@@ -30,7 +32,13 @@ import 'repositories/vessel_repository.dart';
 import 'services/api_service.dart';
 import 'services/local_storage_service.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   var localStorageService = LocalStorageService();
   localStorageService.init();
   var apiService = ApiService(localStorageService);

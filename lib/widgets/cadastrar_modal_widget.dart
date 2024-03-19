@@ -21,6 +21,13 @@ class CadastrarModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String name = '';
+    String email = '';
+    String empresa = '';
+    String funcao = '';
+    String cpf = '';
+    String bloodType = 'A+';
+
     return BlocBuilder<CadastrarCubit, CadastrarState>(
       builder: (context, state) {
         return AlertDialog(
@@ -40,9 +47,11 @@ class CadastrarModal extends StatelessWidget {
                     title: DockStrings.nome,
                     isRequired: true,
                     controller: TextEditingController(
-                      text: '',
+                      text: name,
                     ),
-                    onChanged: (text) {},
+                    onChanged: (text) {
+                      name = text;
+                    },
                   ),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,24 +65,40 @@ class CadastrarModal extends StatelessWidget {
                               isRequired: true,
                               title: DockStrings.email,
                               controller: TextEditingController(
-                                text: '',
+                                text: email,
                               ),
-                              onChanged: (text) {},
+                              onChanged: (text) {
+                                email = text;
+                              },
+                            ),
+                            TextInputWidget(
+                              title: DockStrings.empresa,
+                              controller: TextEditingController(
+                                text: empresa,
+                              ),
+                              onChanged: (text) {
+                                empresa = text;
+                              },
+                              isRequired: true,
                             ),
                             TextInputWidget(
                               title: DockStrings.funcao,
                               controller: TextEditingController(
-                                text: '',
+                                text: funcao,
                               ),
-                              onChanged: (text) {},
+                              onChanged: (text) {
+                                funcao = text;
+                              },
                               isRequired: true,
                             ),
                             TextInputWidget(
                               title: DockStrings.cpf,
                               controller: TextEditingController(
-                                text: '',
+                                text: cpf,
                               ),
-                              onChanged: (text) {},
+                              onChanged: (text) {
+                                cpf = text;
+                              },
                               keyboardType: TextInputType.number,
                               isRequired: true,
                             ),
@@ -106,8 +131,10 @@ class CadastrarModal extends StatelessWidget {
                                         ),
                                       ),
                                     ),
-                                    value: 'A+',
-                                    onChanged: (String? newValue) {},
+                                    value: bloodType,
+                                    onChanged: (String? newValue) {
+                                      bloodType = newValue ?? 'A+';
+                                    },
                                     items: [
                                       'A+',
                                       'A-',
@@ -161,8 +188,122 @@ class CadastrarModal extends StatelessWidget {
                           )),
                     ],
                   ),
-
-                  //divider
+                  //a collumn with a Text saying "Autorização de entrada" and below a row with three containers with a text and a logic to switch between them when clicked
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 24, 0, 8),
+                        child: Text(
+                          'Autorização de entrada',
+                          overflow: TextOverflow.ellipsis,
+                          style: DockTheme.h1.copyWith(
+                              color: DockColors.iron80,
+                              fontWeight: FontWeight.w400),
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 16.0),
+                            child: InkWell(
+                              onTap: () {
+                                context
+                                    .read<CadastrarCubit>()
+                                    .updateAuthorizationType('Embarcação');
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: state.employee.area == 'Embarcação'
+                                      ? DockColors.iron100
+                                      : DockColors.white,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: DockColors.iron100,
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text('Autorizado',
+                                      style: TextStyle(
+                                          color: state.employee.area ==
+                                                  'Embarcação'
+                                              ? DockColors.white
+                                              : DockColors.iron100)),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 16.0),
+                            child: InkWell(
+                              onTap: () {
+                                context
+                                    .read<CadastrarCubit>()
+                                    .updateAuthorizationType('Dique seco');
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: state.employee.area == 'Dique seco'
+                                      ? DockColors.iron100
+                                      : DockColors.white,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: DockColors.iron100,
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text('Dique seco',
+                                      style: TextStyle(
+                                          color: state.employee.area ==
+                                                  'Dique seco'
+                                              ? DockColors.white
+                                              : DockColors.iron100)),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 16.0),
+                            child: InkWell(
+                              onTap: () {
+                                context
+                                    .read<CadastrarCubit>()
+                                    .updateAuthorizationType('Ambos');
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: state.employee.area == 'Ambos'
+                                      ? DockColors.iron100
+                                      : DockColors.white,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: DockColors.iron100,
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text('Ambos',
+                                      style: TextStyle(
+                                          color: state.employee.area == 'Ambos'
+                                              ? DockColors.white
+                                              : DockColors.iron100)),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -300,7 +441,14 @@ class CadastrarModal extends StatelessWidget {
             ),
             TextButton(
               onPressed: () {
-                context.read<CadastrarCubit>().createEvent();
+                context.read<CadastrarCubit>().createEvent(
+                      name,
+                      email,
+                      empresa,
+                      funcao,
+                      cpf,
+                      bloodType,
+                    );
                 Navigator.of(context).pop();
               },
               child: const Text('Adicionar'),

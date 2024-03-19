@@ -34,8 +34,10 @@ class ProjectRepository {
     print("Getting all projects");
     try {
       final data = await apiService.get('projects');
+      print("Data projects fetched: $data");
       return List<Project>.from(data.map((x) => Project.fromJson(x)));
     } catch (e) {
+      print('error: $e');
       SimpleLogger.severe('Failed to get all projects: ${e.toString()}');
       return [];
     }

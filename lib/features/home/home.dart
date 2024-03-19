@@ -22,6 +22,7 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    context.read<PesquisarCubit>().fetchEmployees();
     return Scaffold(
       body: Row(
         children: [
@@ -248,7 +249,11 @@ class _HomeState extends State<Home> {
             ),
           ),
           if (selectedPage == 'funcionarios') ...{
-            FuncionariosWidget(),
+            FuncionariosWidget(
+              listWidget: [
+                Container(),
+              ],
+            ),
           } else if (selectedPage == 'projetos') ...{
             const Projects(),
           }

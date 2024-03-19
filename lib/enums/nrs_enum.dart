@@ -1,5 +1,9 @@
 class NrsEnum {
-  static const String nr1 =
+  //nr10, nr11, nr33, nr34, nr35, nr37,
+  static const String irata_n1 = 'Irata N1';
+  static const String irata_n2 = 'Irata N2';
+  static const String irata_n3 = 'Irata N3';
+  /* static const String nr1 =
       'NR-1 - DISPOSIÇÕES GERAIS E GERENCIAMENTO DE RISCOS OCUPACIONAIS';
   static const String nr2 = 'NR-2 - INSPEÇÃO PRÉVIA (REVOGADA)';
   static const String nr3 = 'NR-3 - EMBARGO OU INTERDIÇÃO';
@@ -12,12 +16,12 @@ class NrsEnum {
       'NR-7 - PROGRAMA DE CONTROLE MÉDICO DE SAÚDE OCUPACIONAL (PCMSO)';
   static const String nr8 = 'NR-8 - EDIFICAÇÕES';
   static const String nr9 =
-      'NR-9 - PROGRAMA DE PREVENÇÃO DE RISCOS AMBIENTAIS (PPRA)';
+      'NR-9 - PROGRAMA DE PREVENÇÃO DE RISCOS AMBIENTAIS (PPRA)';*/
   static const String nr10 =
       'NR-10 - SEGURANÇA EM INSTALAÇÕES E SERVIÇOS EM ELETRICIDADE';
   static const String nr11 =
       'NR-11 - TRANSPORTE, MOVIMENTAÇÃO, ARMAZENAGEM E MANUSEIO DE MATERIAIS';
-  static const String nr12 =
+  /* static const String nr12 =
       'NR-12 - SEGURANÇA NO TRABALHO EM MÁQUINAS E EQUIPAMENTOS';
   static const String nr13 = 'NR-13 - CALDEIRAS E VASOS DE PRESSÃO';
   static const String nr14 = 'NR-14 - FORNOS';
@@ -46,19 +50,22 @@ class NrsEnum {
   static const String nr31 =
       'NR-31 - SEGURANÇA E SAÚDE NO TRABALHO NA AGRICULTURA, PECUÁRIA SILVICULTURA, EXPLORAÇÃO FLORESTAL E AQUICULTURA';
   static const String nr32 =
-      'NR-32 - SEGURANÇA E SAÚDE NO TRABALHO EM SERVIÇOS DE SAÚDE';
+      'NR-32 - SEGURANÇA E SAÚDE NO TRABALHO EM SERVIÇOS DE SAÚDE';*/
   static const String nr33 =
       'NR-33 - SEGURANÇA E SAÚDE NO TRABALHO EM ESPAÇOS CONFINADOS';
   static const String nr35 = 'NR-35 - TRABALHO EM ALTURA';
-  static const String nr36 =
-      'NR-36 - SEGURANÇA E SAÚDE NO TRABALHO EM EMPRESAS DE ABATE E PROCESSAMENTO DE CARNES E DERIVADOS';
+  /*static const String nr36 =
+      'NR-36 - SEGURANÇA E SAÚDE NO TRABALHO EM EMPRESAS DE ABATE E PROCESSAMENTO DE CARNES E DERIVADOS';*/
   static const String nr37 =
       'NR-37 - SEGURANÇA E SAÚDE EM PLATAFORMAS DE PETRÓLEO';
   static const String nr38 =
       'NR-38 - SEGURANÇA E SAÚDE NO TRABALHO NAS ATIVIDADES DE LIMPEZA URBANA E MANEJO DE RESÍDUOS SÓLIDOS';
 
   static const List<String> nrs = [
-    nr1,
+    irata_n1,
+    irata_n2,
+    irata_n3,
+    /* nr1,
     nr2,
     nr3,
     nr4,
@@ -66,10 +73,10 @@ class NrsEnum {
     nr6,
     nr7,
     nr8,
-    nr9,
+    nr9,*/
     nr10,
     nr11,
-    nr12,
+    /* nr12,
     nr13,
     nr14,
     nr15,
@@ -89,10 +96,10 @@ class NrsEnum {
     nr29,
     nr30,
     nr31,
-    nr32,
+    nr32,*/
     nr33,
     nr35,
-    nr36,
+    // nr36,
     nr37,
     nr38,
   ];

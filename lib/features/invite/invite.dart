@@ -34,6 +34,14 @@ class InviteWidget extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Text(
+                      'Convidar empresa parceira',
+                      style: DockTheme.h1.copyWith(
+                        color: DockColors.iron100,
+                        fontSize: 24,
+                      ),
+                    ),
+                    SizedBox(height: 20),
                     TextInputWidget(
                       title: 'Nome da empresa',
                       isRequired: true,
@@ -105,6 +113,7 @@ class InviteWidget extends StatelessWidget {
                     SizedBox(height: 10),
                     Expanded(
                       child: Container(
+                        width: 800,
                         color:
                             DockColors.background, // Different background color
                         child: state.invites.isNotEmpty
@@ -151,7 +160,7 @@ class InviteWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
         ),
         child: Text(
-          'Convidar',
+          'Convidar empresas parceiras para este projeto',
           style: DockTheme.h2.copyWith(
             color: DockColors.white,
             fontSize: 14,

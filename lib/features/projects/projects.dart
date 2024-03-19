@@ -31,7 +31,7 @@ class Projects extends StatelessWidget {
               child: const Center(
                 child: CircularProgressIndicator(),
               ));
-        } else {
+        } else if (!state.isLoading && state.projects.isNotEmpty) {
           List<Project> allProjects = state.projects;
 
           return Container(
@@ -95,26 +95,26 @@ class Projects extends StatelessWidget {
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: !state.isLoading && state.projects.isNotEmpty
-                          ? ListView.builder(
-                              itemCount: allProjects.length,
-                              itemBuilder: (context, index) {
-                                //Employee employee = displayEmployees[index];
-                                Project project = allProjects[index];
-                                return _buildProjectListTile(context, project);
-                              },
-                            )
-                          : Center(
-                              child: Text(
-                                'Nenhum projeto encontrado',
-                                style: DockTheme.h2.copyWith(
-                                  color: DockColors.iron100,
-                                ),
-                              ),
-                            ),
+                      child: ListView.builder(
+                        itemCount: allProjects.length,
+                        itemBuilder: (context, index) {
+                          //Employee employee = displayEmployees[index];
+                          Project project = allProjects[index];
+                          return _buildProjectListTile(context, project);
+                        },
+                      ),
                     ),
                   ),
                 ],
+              ),
+            ),
+          );
+        } else {
+          return Center(
+            child: Text(
+              'Nenhum projeto encontrado',
+              style: DockTheme.h2.copyWith(
+                color: DockColors.iron100,
               ),
             ),
           );
@@ -203,7 +203,7 @@ class Projects extends StatelessWidget {
                                 fontSize: 14,
                               ),
                             ),
-                            Spacer(),
+                            SizedBox(height: 16),
                             InviteWidget(projectId: project.id),
                           ],
                         ),
@@ -238,5 +238,7 @@ class Projects extends StatelessWidget {
         return ProjectModal();
       },
     );
+    //call fetchProjects method after the modal is closed
+    context.read<ProjectCubit>().fetchProjects();
   }
 }

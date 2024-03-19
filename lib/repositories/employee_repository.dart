@@ -51,6 +51,7 @@ class EmployeeRepository {
   Future<String> getLastEmployeeNumber() async {
     try {
       final data = await apiService.get('employees/lastnumber');
+      print("Data fetched: ${data.toString()}");
       return data['number'];
     } catch (e) {
       SimpleLogger.severe(
