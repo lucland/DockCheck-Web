@@ -9,7 +9,8 @@ class DetailsLoading extends DetailsState {}
 class DetailsLoaded extends DetailsState {
   final Employee employee;
   final List<Document> documents;
-  DetailsLoaded(this.employee, this.documents);
+  final List<String> urls = [];
+  DetailsLoaded(this.employee, this.documents, {List<String>? urls});
 }
 
 class DetailsError extends DetailsState {
