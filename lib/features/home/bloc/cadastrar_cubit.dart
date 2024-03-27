@@ -131,16 +131,16 @@ class CadastrarCubit extends Cubit<CadastrarState> {
     emit(state.copyWith(selectedNr: nrType));
   }
 
-  void addDocument(PlatformFile file) {
+  void addDocument(PlatformFile file, DateTime expirationDate, String type) {
     //turn file to base64
     final String base64 = base64Encode(file.bytes!);
 
     final updatedDocuments = List<Document>.from(state.documents)
       ..add(Document(
         id: const Uuid().v4(),
-        type: file.extension ?? 'unknown',
+        type: type,
         employeeId: state.employee.id,
-        expirationDate: DateTime.now().add(const Duration(days: 365)),
+        expirationDate: expirationDate,
         path: base64,
         status: 'pending',
       ));
