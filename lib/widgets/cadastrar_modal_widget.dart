@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dockcheck_web/widgets/image_picker_widget.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -28,29 +30,35 @@ class CadastrarModal extends StatelessWidget {
     String funcao = '';
     String cpf = '';
     String bloodType = 'A+';
-    
 
     return BlocBuilder<CadastrarCubit, CadastrarState>(
       builder: (context, state) {
         Future<void> _pickFile(BuildContext context, String type) async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['pdf'],
-    );
+          FilePickerResult? result = await FilePicker.platform.pickFiles(
+            type: FileType.custom,
+            allowedExtensions: ['pdf'],
+          );
 
-    if (result != null) {
-      final PlatformFile file = result.files.first;
-      DateTime? expirationDate = await showDatePicker(
-        context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime(2000),
-        lastDate: DateTime(2101),
-      );
-      if (expirationDate != null) {
-        context.read<CadastrarCubit>().addDocument(file, expirationDate, type); // Trigger addDocument with the selected file and date
-      }
-    }
-  }
+          if (result != null) {
+            final File files = File(result.files.single.path!);
+            final PlatformFile file = result.files.first;
+            DateTime? expirationDate = await showDatePicker(
+              context: context,
+              initialDate: DateTime.now(),
+              firstDate: DateTime(2000),
+              lastDate: DateTime(2101),
+            );
+            if (expirationDate != null) {
+              print(expirationDate);
+              context.read<CadastrarCubit>().addDocument(
+                  file,
+                  expirationDate,
+                  type,
+                  files); // Trigger addDocument with the selected file and date
+            }
+          }
+        }
+
         return AlertDialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
@@ -286,312 +294,325 @@ class CadastrarModal extends StatelessWidget {
                         ),
                       ),
                       Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        
-          Row(
-            children: [
-              Flexible(
-                child: Text(
-                  DockStrings.aso,
-                  style: DockTheme.h2.copyWith(fontSize: 18),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              
-                Text(
-                  '*',
-                  style: DockTheme.h2.copyWith(color: DockColors.danger100, fontSize: 18),
-                ),
-            ],
-          ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: TextEditingController(),
-                      decoration: InputDecoration(
-                        suffixIcon: const Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.calendar_today,
-                              color: DockColors.slate100,
-                            ),
-                            SizedBox(
-                              width: 20,
-                            ),
-                          ],
-                        ),
-                        hintText: DockStrings.aso,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: const BorderSide(
-                            color: DockColors.slate100,
-                            width: 1.0,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  DockStrings.aso,
+                                  style: DockTheme.h2.copyWith(fontSize: 18),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              Text(
+                                '*',
+                                style: DockTheme.h2.copyWith(
+                                    color: DockColors.danger100, fontSize: 18),
+                              ),
+                            ],
                           ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: const BorderSide(
-                            color: DockColors.slate100,
-                            width: 1.0,
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: TextField(
+                                        controller: TextEditingController(),
+                                        decoration: InputDecoration(
+                                          suffixIcon: const Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(
+                                                Icons.calendar_today,
+                                                color: DockColors.slate100,
+                                              ),
+                                              SizedBox(
+                                                width: 20,
+                                              ),
+                                            ],
+                                          ),
+                                          hintText: DockStrings.aso,
+                                          border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                            borderSide: const BorderSide(
+                                              color: DockColors.slate100,
+                                              width: 1.0,
+                                            ),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                            borderSide: const BorderSide(
+                                              color: DockColors.slate100,
+                                              width: 1.0,
+                                            ),
+                                          ),
+                                        ),
+                                        readOnly: true,
+                                        onTap: () async {
+                                          _pickFile(context, "ASO");
+                                        },
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 8.0),
+                                      child: InkWell(
+                                        onTap: () => _pickFile(context, "ASO"),
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: DockColors.slate100,
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                          ),
+                                          child: const Padding(
+                                            padding: EdgeInsets.all(12.0),
+                                            child: Icon(
+                                              Icons.attach_file,
+                                              color: DockColors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                if (state.documents
+                                    .any((document) => document.type == "ASO"))
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 8.0),
+                                    child: Text(
+                                      'Documento enviado com sucesso',
+                                      style: DockTheme.h3.copyWith(
+                                        color: DockColors.success100,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
                           ),
-                        ),
+                        ],
                       ),
-                      readOnly: true,
-                      onTap: () async {
-                        _pickFile(context, "ASO");
-                      },
-                    ),
-                  ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: InkWell(
-                        onTap: () => _pickFile(context, "ASO"),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: DockColors.slate100,
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                          child: const Padding(
-                            padding: EdgeInsets.all(12.0),
-                            child: Icon(
-                              Icons.attach_file,
-                              color: DockColors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-              if (state.documents.any((document) => document.type == "ASO"))
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: Text(
-                    'Documento enviado com sucesso',
-                    style: DockTheme.h3.copyWith(
-                      color: DockColors.success100,
-                      fontSize: 15,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ],
-    ),
                       Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        
-          Row(
-            children: [
-              Flexible(
-                child: Text(
-                  DockStrings.nr34,
-                  style: DockTheme.h2.copyWith(fontSize: 18),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              
-                Text(
-                  '*',
-                  style: DockTheme.h2.copyWith(color: DockColors.danger100, fontSize: 18),
-                ),
-            ],
-          ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: TextEditingController(),
-                      decoration: InputDecoration(
-                        suffixIcon: const Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.calendar_today,
-                              color: DockColors.slate100,
-                            ),
-                            SizedBox(
-                              width: 20,
-                            ),
-                          ],
-                        ),
-                        hintText: DockStrings.aso,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: const BorderSide(
-                            color: DockColors.slate100,
-                            width: 1.0,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  DockStrings.nr34,
+                                  style: DockTheme.h2.copyWith(fontSize: 18),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              Text(
+                                '*',
+                                style: DockTheme.h2.copyWith(
+                                    color: DockColors.danger100, fontSize: 18),
+                              ),
+                            ],
                           ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: const BorderSide(
-                            color: DockColors.slate100,
-                            width: 1.0,
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: TextField(
+                                        controller: TextEditingController(),
+                                        decoration: InputDecoration(
+                                          suffixIcon: const Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(
+                                                Icons.calendar_today,
+                                                color: DockColors.slate100,
+                                              ),
+                                              SizedBox(
+                                                width: 20,
+                                              ),
+                                            ],
+                                          ),
+                                          hintText: DockStrings.aso,
+                                          border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                            borderSide: const BorderSide(
+                                              color: DockColors.slate100,
+                                              width: 1.0,
+                                            ),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                            borderSide: const BorderSide(
+                                              color: DockColors.slate100,
+                                              width: 1.0,
+                                            ),
+                                          ),
+                                        ),
+                                        readOnly: true,
+                                        onTap: () async {
+                                          _pickFile(context, "NR-34");
+                                        },
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 8.0),
+                                      child: InkWell(
+                                        onTap: () =>
+                                            _pickFile(context, "NR-34"),
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: DockColors.slate100,
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                          ),
+                                          child: const Padding(
+                                            padding: EdgeInsets.all(12.0),
+                                            child: Icon(
+                                              Icons.attach_file,
+                                              color: DockColors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                if (state.documents.any(
+                                    (document) => document.type == "NR-34"))
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 8.0),
+                                    child: Text(
+                                      'Documento enviado com sucesso',
+                                      style: DockTheme.h3.copyWith(
+                                        color: DockColors.success100,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
                           ),
-                        ),
+                        ],
                       ),
-                      readOnly: true,
-                      onTap: () async {
-                        _pickFile(context, "NR-34");
-                      },
-                    ),
-                  ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: InkWell(
-                        onTap: () => _pickFile(context, "NR-34"),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: DockColors.slate100,
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                          child: const Padding(
-                            padding: EdgeInsets.all(12.0),
-                            child: Icon(
-                              Icons.attach_file,
-                              color: DockColors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            if (state.documents.any((document) => document.type == "NR-34"))
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: Text(
-                    'Documento enviado com sucesso',
-                    style: DockTheme.h3.copyWith(
-                      color: DockColors.success100,
-                      fontSize: 15,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ],
-    ),
                       ...state.nrTypes.map(
                         (nrType) => Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        
-          Row(
-            children: [
-              Flexible(
-                child: Text(
-                  nrType,
-                  style: DockTheme.h2.copyWith(fontSize: 18),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              
-                Text(
-                  '*',
-                  style: DockTheme.h2.copyWith(color: DockColors.danger100, fontSize: 18),
-                ),
-            ],
-          ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: TextEditingController(),
-                      decoration: InputDecoration(
-                        suffixIcon: const Row(
-                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Icon(
-                              Icons.calendar_today,
-                              color: DockColors.slate100,
+                            Row(
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    nrType,
+                                    style: DockTheme.h2.copyWith(fontSize: 18),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Text(
+                                  '*',
+                                  style: DockTheme.h2.copyWith(
+                                      color: DockColors.danger100,
+                                      fontSize: 18),
+                                ),
+                              ],
                             ),
-                            SizedBox(
-                              width: 20,
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: TextField(
+                                          controller: TextEditingController(),
+                                          decoration: InputDecoration(
+                                            suffixIcon: const Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Icon(
+                                                  Icons.calendar_today,
+                                                  color: DockColors.slate100,
+                                                ),
+                                                SizedBox(
+                                                  width: 20,
+                                                ),
+                                              ],
+                                            ),
+                                            hintText: DockStrings.aso,
+                                            border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8.0),
+                                              borderSide: const BorderSide(
+                                                color: DockColors.slate100,
+                                                width: 1.0,
+                                              ),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8.0),
+                                              borderSide: const BorderSide(
+                                                color: DockColors.slate100,
+                                                width: 1.0,
+                                              ),
+                                            ),
+                                          ),
+                                          readOnly: true,
+                                          onTap: () async {
+                                            _pickFile(context, nrType);
+                                          },
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 8.0),
+                                        child: InkWell(
+                                          onTap: () =>
+                                              _pickFile(context, nrType),
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color: DockColors.slate100,
+                                              borderRadius:
+                                                  BorderRadius.circular(8.0),
+                                            ),
+                                            child: const Padding(
+                                              padding: EdgeInsets.all(12.0),
+                                              child: Icon(
+                                                Icons.attach_file,
+                                                color: DockColors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  if (state.documents.any(
+                                      (document) => document.type == nrType))
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 8.0),
+                                      child: Text(
+                                        'Documento enviado com sucesso',
+                                        style: DockTheme.h3.copyWith(
+                                          color: DockColors.success100,
+                                          fontSize: 15,
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
-                        hintText: DockStrings.aso,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: const BorderSide(
-                            color: DockColors.slate100,
-                            width: 1.0,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: const BorderSide(
-                            color: DockColors.slate100,
-                            width: 1.0,
-                          ),
-                        ),
-                      ),
-                      readOnly: true,
-                      onTap: () async {
-                        _pickFile(context, nrType);
-                      },
-                    ),
-                  ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: InkWell(
-                        onTap: () => _pickFile(context, nrType),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: DockColors.slate100,
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                          child: const Padding(
-                            padding: EdgeInsets.all(12.0),
-                            child: Icon(
-                              Icons.attach_file,
-                              color: DockColors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-               if (state.documents.any((document) => document.type == nrType))
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: Text(
-                    'Documento enviado com sucesso',
-                    style: DockTheme.h3.copyWith(
-                      color: DockColors.success100,
-                      fontSize: 15,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ],
-    ),
                       ),
                       const SizedBox(height: 16),
                       Padding(
@@ -692,10 +713,10 @@ class CadastrarModal extends StatelessWidget {
               onPressed: () {
                 context.read<CadastrarCubit>().createEvent(
                       name,
-                      email,
-                      empresa,
-                      funcao,
                       cpf,
+                      email,
+                      funcao,
+                      empresa,
                       bloodType,
                     );
                 Navigator.of(context).pop();
