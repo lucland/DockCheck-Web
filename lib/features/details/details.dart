@@ -1,7 +1,9 @@
+import 'dart:html';
 import 'dart:js';
 
 import 'package:dockcheck_web/features/details/bloc/details_cubit.dart';
 import 'package:dockcheck_web/models/employee.dart';
+import 'package:dockcheck_web/models/picture.dart';
 import 'package:dockcheck_web/utils/colors.dart';
 import 'package:dockcheck_web/utils/strings.dart';
 import 'package:flutter/material.dart';
@@ -55,14 +57,8 @@ class DetailsView extends StatelessWidget {
                     ],
                   ),
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Your TitleValueWidgets here for cpf, bloodType, etc.
-                  ],
-                ),
+                _buildDocumentsCard(documents, employee, context, state.urls),
                 // Additional Widgets for displaying user details
-                _buildDocumentsCard(documents, employee, context),
               ],
             ),
           );
@@ -73,11 +69,13 @@ class DetailsView extends StatelessWidget {
     );
   }
 
-  Widget _buildDocumentsCard(List<Document> documents, Employee employee, BuildContext context) {
-    return Card(
+  Widget _buildDocumentsCard(List<Document> documents, Employee employee,
+      BuildContext context, List<String> urls) {
+    return Container(
       color: DockColors.white,
+      height: MediaQuery.of(context).size.height,
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -103,6 +101,7 @@ class DetailsView extends StatelessWidget {
               value: employee.area,
             ),
 
+            const SizedBox(height: 16),
             //card with the documents
             Card(
               color: DockColors.background,
@@ -121,26 +120,41 @@ class DetailsView extends StatelessWidget {
                           .map((document) => Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    document.type,
-                                    style: DockTheme.h3.copyWith(
-                                        color: DockColors.iron100,
-                                        fontWeight: FontWeight.w600),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        document.type,
+                                        style: DockTheme.h2.copyWith(
+                                            color: DockColors.iron100,
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 16),
+                                      ),
+                                      Text(
+                                        'Validade: ${Formatter.formatDateTime(document.expirationDate)}',
+                                        style: DockTheme.h2.copyWith(
+                                            color: DockColors.iron100,
+                                            fontSize: 16),
+                                      ),
+                                    ],
                                   ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    'Validade: ${Formatter.formatDateTime(document.expirationDate)}',
-                                    style: DockTheme.h3.copyWith(color: DockColors.iron100),
-                                  ),
+
                                   const SizedBox(height: 8),
                                   //download container inkwell button with icon
                                   InkWell(
                                     onTap: () {
-                                    //  context.read<DetailsCubit>().downloadDocument(employeeId);
+                                      //download the document from state.urls where the index is the same as the document index
+                                      window.open(
+                                          urls[documents.indexOf(document)],
+                                          '_blank');
                                     },
                                     child: Container(
                                       padding: const EdgeInsets.all(8.0),
-                                      color: DockColors.iron100,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(4),
+                                        color: DockColors.iron100,
+                                      ),
                                       child: Row(
                                         children: [
                                           const Icon(
@@ -151,10 +165,18 @@ class DetailsView extends StatelessWidget {
                                           Text(
                                             'Baixar',
                                             style: DockTheme.h3.copyWith(
-                                                color: Colors.white),
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w400),
                                           ),
                                         ],
                                       ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: const Divider(
+                                      color: DockColors.iron30,
+                                      thickness: 1,
                                     ),
                                   ),
                                 ],
