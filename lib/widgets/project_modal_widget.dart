@@ -40,15 +40,6 @@ class ProjectModal extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TextInputWidget(
-                      title: 'Nome do Projeto',
-                      isRequired: true,
-                      controller: TextEditingController(
-                        text: name,
-                      ),
-                      onChanged: (text) {
-                        name = text;
-                      }),
                   SizedBox(height: 8),
                   TextInputWidget(
                       title: 'Nome da Embarcação',
@@ -149,7 +140,7 @@ class ProjectModal extends StatelessWidget {
                   SizedBox(height: 8),
                   // New TextInputWidget for "Endereço"
                   TextInputWidget(
-                      title: 'Endereço',
+                      title: 'Local',
                       isRequired: false, // Set based on your requirement
                       controller: TextEditingController(
                         text: state.address,
@@ -161,7 +152,7 @@ class ProjectModal extends StatelessWidget {
                   SizedBox(height: 8),
                   // New FilePickerWidget for "Blueprints do projeto"
                   FilePickerWidget(
-                    title: 'Blueprints do Projeto',
+                    title: 'Arranjo geral',
                   ),
                 ],
               ),

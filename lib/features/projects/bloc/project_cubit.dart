@@ -102,7 +102,9 @@ class ProjectCubit extends Cubit<ProjectState> {
     try {
       final project = Project(
         id: const Uuid().v4(), // Generate a new UUID for the project
-        name: state.name,
+        name: state.isDocking
+            ? 'Docagem - ${state.vesselId}'
+            : 'Mobilização - ${state.vesselId}',
         dateStart: state.startDate ?? DateTime.now(),
         dateEnd: state.endDate ?? DateTime.now(),
         vesselId: state.vesselId,

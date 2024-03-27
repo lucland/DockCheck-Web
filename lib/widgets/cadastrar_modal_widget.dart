@@ -102,59 +102,6 @@ class CadastrarModal extends StatelessWidget {
                               keyboardType: TextInputType.number,
                               isRequired: true,
                             ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text('Tipo sanguíneo',
-                                    style: DockTheme.h2),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      top: 8, right: 16, bottom: 8),
-                                  child: DropdownButtonFormField<String>(
-                                    decoration: InputDecoration(
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                              horizontal: 16, vertical: 11.5),
-                                      hintText: 'Tipo Sanguíneo',
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                        borderSide: const BorderSide(
-                                          color: DockColors.slate100,
-                                          width: 1,
-                                        ),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                        borderSide: const BorderSide(
-                                          color: DockColors.slate100,
-                                          width: 1,
-                                        ),
-                                      ),
-                                    ),
-                                    value: bloodType,
-                                    onChanged: (String? newValue) {
-                                      bloodType = newValue ?? 'A+';
-                                    },
-                                    items: [
-                                      'A+',
-                                      'A-',
-                                      'B+',
-                                      'B-',
-                                      'AB+',
-                                      'AB-',
-                                      'O+',
-                                      'O-',
-                                    ].map<DropdownMenuItem<String>>(
-                                        (String value) {
-                                      return DropdownMenuItem<String>(
-                                        value: value,
-                                        child: Text(value),
-                                      );
-                                    }).toList(),
-                                  ),
-                                ),
-                              ],
-                            ),
                           ],
                         ),
                       ),
