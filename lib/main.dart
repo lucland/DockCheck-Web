@@ -5,6 +5,7 @@ import 'package:dockcheck_web/firebase_options.dart';
 import 'package:dockcheck_web/models/project.dart';
 import 'package:dockcheck_web/utils/theme.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
@@ -39,6 +40,11 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  //instantiate firebase storage
+  final FirebaseStorage storage = FirebaseStorage.instanceFor(
+    bucket: 'gs://dockcheck-prod.appspot.com',
+  );
+
   var localStorageService = LocalStorageService();
   localStorageService.init();
   var apiService = ApiService(localStorageService);
@@ -63,9 +69,9 @@ void main() async {
       LoginCubit(loginRepository, userRepository, localStorageService);
   var pesquisarCUbit = PesquisarCubit(employeeRepository, projectRepository);
   var cadastrarCubit = CadastrarCubit(employeeRepository, localStorageService,
-      eventRepository, pictureRepository, documentRepository);
-  var detailsCubit =
-      DetailsCubit(employeeRepository, documentRepository, localStorageService);
+      eventRepository, pictureRepository, documentRepository, storage);
+  var detailsCubit = DetailsCubit(
+      employeeRepository, documentRepository, localStorageService, storage);
   var projectCubit = ProjectCubit(projectRepository, localStorageService);
   var inviteCubit = InviteCubit(inviteRepository);
 
@@ -96,6 +102,7 @@ void main() async {
         BlocProvider<DetailsCubit>(create: (_) => detailsCubit),
         BlocProvider<ProjectCubit>(create: (_) => projectCubit),
         BlocProvider<InviteCubit>(create: (_) => inviteCubit),
+        Provider(create: (_) => storage),
       ],
       child: MyApp(),
     ),
