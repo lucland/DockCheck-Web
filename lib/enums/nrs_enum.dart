@@ -1,7 +1,7 @@
 class NrsEnum {
-  static const String irata_n1 = 'Irata N1';
-  static const String irata_n2 = 'Irata N2';
-  static const String irata_n3 = 'Irata N3';
+  static const String irata_n1 = 'IRATA N1';
+  static const String irata_n2 = 'IRATA N2';
+  static const String irata_n3 = 'IRATA N3';
   /* static const String nr1 =
       'NR-1 - DISPOSIÇÕES GERAIS E GERENCIAMENTO DE RISCOS OCUPACIONAIS';
   static const String nr2 = 'NR-2 - INSPEÇÃO PRÉVIA (REVOGADA)';
