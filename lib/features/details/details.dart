@@ -1,3 +1,5 @@
+import 'dart:js';
+
 import 'package:dockcheck_web/features/details/bloc/details_cubit.dart';
 import 'package:dockcheck_web/models/employee.dart';
 import 'package:dockcheck_web/utils/colors.dart';
@@ -10,16 +12,16 @@ import '../../utils/theme.dart';
 import '../../widgets/title_value_widget.dart';
 
 class DetailsView extends StatelessWidget {
-  final Employee employee;
+  final String employeeId;
 
   DetailsView({
     super.key,
-    required this.employee,
+    required this.employeeId,
   });
 
   @override
   Widget build(BuildContext context) {
-    context.read<DetailsCubit>().getEmployeeAndDocuments(employee.id);
+    context.read<DetailsCubit>().getEmployeeAndDocuments(employeeId);
     return BlocBuilder<DetailsCubit, DetailsState>(
       builder: (context, state) {
         if (state is DetailsLoading) {
@@ -28,6 +30,7 @@ class DetailsView extends StatelessWidget {
           return Center(child: Text('Error: ${state.message}'));
         } else if (state is DetailsLoaded) {
           final documents = state.documents;
+          final employee = state.employee;
 
           return SingleChildScrollView(
             child: Column(
@@ -52,19 +55,14 @@ class DetailsView extends StatelessWidget {
                     ],
                   ),
                 ),
-                SizedBox(height: 16),
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Your TitleValueWidgets here for cpf, bloodType, etc.
-                    ],
-                  ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Your TitleValueWidgets here for cpf, bloodType, etc.
+                  ],
                 ),
                 // Additional Widgets for displaying user details
-                _buildDocumentsCard(documents),
+                _buildDocumentsCard(documents, employee, context),
               ],
             ),
           );
@@ -75,22 +73,99 @@ class DetailsView extends StatelessWidget {
     );
   }
 
-  Widget _buildDocumentsCard(List<Document> documents) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Card(
-        color: DockColors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Your documents related widgets here
-            ],
-          ),
+  Widget _buildDocumentsCard(List<Document> documents, Employee employee, BuildContext context) {
+    return Card(
+      color: DockColors.white,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            //Texts with titke and value, one above the other, for each employee data
+            TitleValueWidget(
+              title: "Empresa",
+              value: employee.thirdCompanyId,
+            ),
+            TitleValueWidget(
+              title: "Função",
+              value: employee.role,
+            ),
+            TitleValueWidget(
+              title: "CPF",
+              value: employee.cpf,
+            ),
+            TitleValueWidget(
+              title: "Email",
+              value: employee.email,
+            ),
+            TitleValueWidget(
+              title: "Acesso (embarcação, dique seco ou ambas)",
+              value: employee.area,
+            ),
+
+            //card with the documents
+            Card(
+              color: DockColors.background,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Documentos',
+                      style: DockTheme.h2.copyWith(color: DockColors.iron100),
+                    ),
+                    const SizedBox(height: 8),
+                    Column(
+                      children: documents
+                          .map((document) => Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    document.type,
+                                    style: DockTheme.h3.copyWith(
+                                        color: DockColors.iron100,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    'Validade: ${Formatter.formatDateTime(document.expirationDate)}',
+                                    style: DockTheme.h3.copyWith(color: DockColors.iron100),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  //download container inkwell button with icon
+                                  InkWell(
+                                    onTap: () {
+                                    //  context.read<DetailsCubit>().downloadDocument(employeeId);
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.all(8.0),
+                                      color: DockColors.iron100,
+                                      child: Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.download,
+                                            color: Colors.white,
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            'Baixar',
+                                            style: DockTheme.h3.copyWith(
+                                                color: Colors.white),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ))
+                          .toList(),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
