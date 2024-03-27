@@ -1,10 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:dockcheck_web/repositories/event_repository.dart';
 import 'package:dockcheck_web/repositories/picture_repository.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uuid/uuid.dart';
 
@@ -24,14 +27,20 @@ class CadastrarCubit extends Cubit<CadastrarState> {
   final PictureRepository pictureRepository;
   final DocumentRepository documentRepository;
   final LocalStorageService localStorageService;
+  final FirebaseStorage storage;
 
   @override
   bool isClosed = false;
   late StreamSubscription scanSubscription;
   bool isStreaming = false;
 
-  CadastrarCubit(this.employeeRepository, this.localStorageService,
-      this.eventRepository, this.pictureRepository, this.documentRepository)
+  CadastrarCubit(
+      this.employeeRepository,
+      this.localStorageService,
+      this.eventRepository,
+      this.pictureRepository,
+      this.documentRepository,
+      this.storage)
       : super(
           CadastrarState(
             numero: 0,
@@ -131,17 +140,30 @@ class CadastrarCubit extends Cubit<CadastrarState> {
     emit(state.copyWith(selectedNr: nrType));
   }
 
-  void addDocument(PlatformFile file, DateTime expirationDate, String type) {
-    //turn file to base64
-    final String base64 = base64Encode(file.bytes!);
+  void addDocument(
+      PlatformFile file, DateTime expirationDate, String type, File files) {
+    String docId = const Uuid().v4();
+//send the file to the firebase storage
+    try {
+      final ref = storage.ref('documents/$docId');
+      ref.putFile(files);
+    } catch (e) {
+      print(e.toString());
+      SimpleLogger.warning('Error cadastrar_cubit addDocument: $e');
+      if (!isClosed) {
+        emit(state.copyWith(
+          errorMessage: e.toString(),
+        ));
+      }
+    }
 
     final updatedDocuments = List<Document>.from(state.documents)
       ..add(Document(
-        id: const Uuid().v4(),
+        id: docId,
         type: type,
         employeeId: state.employee.id,
         expirationDate: expirationDate,
-        path: base64,
+        path: 'documents/$docId',
         status: 'pending',
       ));
     emit(state.copyWith(documents: updatedDocuments));
