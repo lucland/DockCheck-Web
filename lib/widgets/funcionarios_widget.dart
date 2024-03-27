@@ -271,8 +271,8 @@ class FuncionariosWidget extends StatelessWidget {
             width: MediaQuery.of(context).size.width *
                 0.5, // 50% width of the screen
             child: DetailsView(
-                employee:
-                    employee), // Assuming Details widget takes a user as a parameter
+                employeeId:
+                    employee.id), // Assuming Details widget takes a user as a parameter
           ),
         );
       },
