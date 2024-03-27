@@ -21,19 +21,17 @@ class DetailsCubit extends Cubit<DetailsState> {
   Future<void> getEmployeeAndDocuments(String employeeId) async {
     try {
       emit(DetailsLoading());
-      final employee = await employeeRepository.getEmployeeById(employeeId);
-      /*final documentIds =
-          await documentsRepository.getDocumentIdsByEmployeeId(employeeId);
-      final documents = await Future.wait<Document>(
-          documentIds.map((id) => documentsRepository.getDocumentById(id)));
-      List<Document> filteredDocuments = documents
-          .where((document) => document.type.isNotEmpty)
-          .toList()
-          .cast<Document>();*/
-      emit(DetailsLoaded(employee, []));
+      Employee employee = await employeeRepository.getEmployeeById(employeeId);
+      List<Document> documents = await documentsRepository.getDocumentByEmployeeId(employeeId);
+
+      emit(DetailsLoaded(employee, documents));
     } catch (e) {
       SimpleLogger.warning('Error fetching user or documents: $e');
       emit(DetailsError('Failed to fetch user or documents: $e'));
     }
   }
+
+//downloadDocument function where it retrieves the document from Firebase using the document id
+
+  
 }
